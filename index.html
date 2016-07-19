@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-4">
+          <input type="file" id="input-tree" />
+        </div>
+        <div id="goto-box" class="col-sm-8 input-group">
+          <input type="text" class="form-control" placeholder="0-1-2-3" value="0-0-2-0-1-2-43" />
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Goto</button>
+          </span>
+        </div>
+      </div>
+      <hr />
+      <div id="tree"></div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/node_logic.js"></script>
+
+    <script src="js/big_tree.js"></script>
+    <script>
+      loadRoot();
+    </script>
+  </body>
+</html>
