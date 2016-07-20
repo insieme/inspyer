@@ -1,18 +1,25 @@
 'use strict'
 
+// ------------------------------------------------------------ Globals
+
+var tree = {}
+var resolveCache = {};
+
 // ------------------------------------------------------------ Register
 
 // register load
 $('#input-tree').on('change', function(e) {
-    // TODO fix file reader
-    return undefined;
+    e.preventDefault();
+
+    var file = e.target.files[0];
 
     var reader = new FileReader();
     reader.onload = function() {
-      tree = JSON.parse(reader.result);
+      tree = JSON.parse(this.result);
       loadRoot();
     }
-    reader.readAsText(e.target.files[0]);
+    console.info('Loading: ' + file.name);
+    reader.readAsText(file);
 });
 
 // register goto
@@ -129,8 +136,6 @@ function addr2id(address) {
     return '0-' + address.join('-');
   }
 }
-
-var resolveCache = {};
 
 function resolve(address) {
   var id = addr2id(address);
