@@ -4,15 +4,8 @@ div {
   /* border: solid thin lightgray; */
 }
 
-.container {
-  margin-top: 20px;
-}
-
-#goto-box {
-  width: 350px;
-}
-
-#tree {
+body {
+  margin-top: 80px;
   margin-bottom: 800px;
 }
 

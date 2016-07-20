@@ -1,9 +1,12 @@
 'use strict'
 
-// var tree = {};
+// ------------------------------------------------------------ Register
 
 // register load
 $('#input-tree').on('change', function(e) {
+    // TODO fix file reader
+    return undefined;
+
     var reader = new FileReader();
     reader.onload = function() {
       tree = JSON.parse(reader.result);
@@ -13,47 +16,21 @@ $('#input-tree').on('change', function(e) {
 });
 
 // register goto
-$('#goto-box button').click(function(e) {
-    var id = $('#goto-box input').val();
-    gotoNode(id2addr(id));
-    $('html, body').animate({
-        scrollTop: $('#' + id).offset().top - 200
-    }, 400);
-    $('#' + id).addClass('flash');
-});
-$('#goto-box input').keydown(function(e) {
-    if (e.keyCode == 13) {
-      $('#goto-box button').click();
-    }
+$('#goto-box').submit(function(e) {
+    e.preventDefault();
+    gotoNode(id2addr($('#goto-box input').val()));
 });
 
-function id2addr(id) {
-  return id.split("-").slice(1);
-}
+// ------------------------------------------------------------ Events
 
-function addr2id(address) {
-  if (address.length == 0) {
-    return '0';
-  } else {
-    return '0-' + address.join('-');
-  }
-}
-
-function gotoNode(address) {
-  for (var i = 0; i < address.length; i++) {
-    $('#' + addr2id(address.slice(0, i)) + '> .body').collapse('show');
-  }
-}
-
-function expandNode(id) {
+function on_NodeExpand(id) {
   $('#' + id + '> .controls > a').text('[-]');
 
   // load children
   var address = id2addr(id);
   var node = resolve(address);
   for (var i = 0; i < node['Children'].length; i++) {
-    var addr = address.concat([i]);
-    appendNode(addr, resolve(addr));
+    showNode(address.concat([i]));
   }
 
   // open next if only one child
@@ -62,11 +39,36 @@ function expandNode(id) {
   }
 }
 
-function collapseNode(id) {
+function on_NodeCollapse(id) {
   $('#' + id + '> .controls > a').text('[+]');
 }
 
-function mkNode(id, node) {
+
+// ------------------------------------------------------------ Logic
+
+// Expand folds to target node, scroll there and highlight target.
+function gotoNode(address) {
+  var id = addr2id(address);
+
+  // expand folds
+  for (var i = 0; i < address.length; i++) {
+    $('#' + addr2id(address.slice(0, i)) + '> .body').collapse('show');
+  }
+
+  // scroll to target
+  $('html, body').animate({
+      scrollTop: $('#' + id).offset().top - 200
+  }, 400);
+
+  // highlight
+  $('#' + id).addClass('flash');
+}
+
+// Create DOM element representing a Node.
+function mkNode(address) {
+  var node = resolve(address);
+  var id = addr2id(address);
+
   var body = "";
   if (node['Value']) {
     body = $('<pre>').text('Value: ' + node['Value']);
@@ -87,10 +89,10 @@ function mkNode(id, node) {
       $('<div class="children">')
     ).on('show.bs.collapse', function(e) {
         e.stopPropagation();
-        expandNode(id);
+        on_NodeExpand(id);
     }).on('hide.bs.collapse', function(e) {
         e.stopPropagation();
-        collapseNode(id);
+        on_NodeCollapse(id);
     }).on('hidden.bs.collapse', function(e) {
         e.stopPropagation();
         $('#' + id + '> .body > .children').empty();
@@ -98,31 +100,54 @@ function mkNode(id, node) {
   );
 }
 
-function appendNode(address, node) {
+// Attach node, assuming parent node is already there>
+function showNode(address) {
+  var id = addr2id(address);
+  if ($('#' + id).length > 0) {
+    return;
+  }
+
+  var parentId = addr2id(address.slice(0, -1));
+  $('#' + parentId + '> .body > .children').append(mkNode(address));
+}
+
+// Attach root node.
+function loadRoot() {
+  $('#tree').html(mkNode([]));
+}
+
+// ------------------------------------------------------------ Utilites
+
+function id2addr(id) {
+  return id.split("-").slice(1);
+}
+
+function addr2id(address) {
   if (address.length == 0) {
-    $('#tree').append(mkNode('0', node));
+    return '0';
   } else {
-    var parentId;
-    if (address.length == 1) {
-      parentId = "0";
-    } else {
-      parentId = "0-" + address.slice(0, -1).join('-');
-    }
-    var id = "0-" + address.join('-');
-    $('#' + parentId + '> .body > .children').append(mkNode(id, node));
+    return '0-' + address.join('-');
   }
 }
 
-function loadRoot() {
-  appendNode([], resolve([]));
-}
+var resolveCache = {};
 
 function resolve(address) {
-  var node = tree['root'];
-  for (var i = 0; i < address.length; i++) {
-    node = tree[node]['Children'][address[i]];
+  var id = addr2id(address);
+
+  // check cache
+  var node = resolveCache[id];
+
+  if (!node) {
+    node = tree['root']
+    for (var i = 0; i < address.length; i++) {
+      node = tree[node]['Children'][address[i]];
+    }
+    node = tree[node];
+    resolveCache[id] = node;
   }
-  return tree[node];
+
+  return node;
 }
 
 function forAllNodes(f, address = []) {
