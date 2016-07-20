@@ -69,6 +69,9 @@ function gotoNode(address) {
 
   // highlight
   $('#' + id).addClass('flash');
+  setTimeout(function() {
+      $('#' + id).removeClass('flash');
+  }, 2000);
 }
 
 // Create DOM element representing a Node.
