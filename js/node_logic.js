@@ -9,8 +9,6 @@ var resolveCache = {};
 
 // register load
 $('#input-tree').on('change', function(e) {
-    e.preventDefault();
-
     var file = e.target.files[0];
 
     var reader = new FileReader();
