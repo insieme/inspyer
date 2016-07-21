@@ -1,19 +1,27 @@
 @charset "UTF-8";
 
-div {
-  /* border: solid thin lightgray; */
+body {
+  margin-top: 140px;
+  margin-bottom: 800px;
 }
 
-body {
-  margin-top: 80px;
-  margin-bottom: 800px;
+.navbar {
+  padding: 5px 20px;
+}
+
+#load-box td {
+  padding-right: 8px;
+}
+
+.label {
+  font-weight: lighter;
 }
 
 .node {
   margin: 2px 0px 2px 6px;
   padding: 2px 0px 2px 2px;
   border: solid thin lightblue;
-  /* background-color: rgba(0, 20, 20, 0.02); */
+  background-color: #fdfdfd;
 }
 
 .node > .controls {
@@ -39,16 +47,39 @@ body {
 
 .node > .displaytext > .kind {
   font-size: 12pt;
+  margin-right: 12px;
 }
 
 .node > .displaytext > .address {
-  margin-left: 6px;
   font-family: monospace;
   font-size: 8pt;
+  margin-right: 8px;
 }
 
 .node > .body {
   padding: 2px;
+}
+
+.node > .body > .text {
+  margin-left: 10px;
+  padding-left: 2px;
+  border-left: solid thin lightblue;
+}
+
+.node-hl {
+  background-color: #fcf8e3;
+}
+
+.node-hl-type {
+  background-color: #d9edf7;
+}
+
+.node-hl-value {
+  background-color: #e7e7e9;
+}
+
+.node-hl-variable {
+  background-color: #f2dede;
 }
 
 /* flashing animation */
