@@ -5,12 +5,22 @@ body {
   margin-bottom: 800px;
 }
 
+.navbar {
+  padding: 0px 20px;
+}
+
 #load-box td {
   padding-right: 8px;
 }
 
 .label {
   font-weight: lighter;
+}
+
+#search-results-box {
+  padding-top: 1em;
+  width: 80px;
+  text-align: right;
 }
 
 .node {
@@ -81,13 +91,13 @@ body {
 /* flashing animation */
 .flash {
   -moz-animation: flash 1s ease-out;
-  -moz-animation-iteration-count: 2;
+  -moz-animation-iteration-count: infinite;
 
   -webkit-animation: flash 1s ease-out;
-  -webkit-animation-iteration-count: 2;
+  -webkit-animation-iteration-count: infinite;
 
   -ms-animation: flash 1s ease-out;
-  -ms-animation-iteration-count: 2;
+  -ms-animation-iteration-count: infinite;
 }
 
 @-webkit-keyframes flash {

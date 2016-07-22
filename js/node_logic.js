@@ -7,6 +7,7 @@ var resolveCache = {};
 var meta = {};
 var searchIndex = -1;
 var searchResults = [];
+var searchWorker = false;
 
 // ------------------------------------------------------------ Register
 
@@ -53,31 +54,54 @@ $('#goto-box').submit(function(e) {
 // register search
 $('#search-box').submit(function(e) {
     e.preventDefault();
-
-    if (searchIndex >= 0) {
-      searchIndex = (searchIndex + 1) % searchResults.length;
-    } else {
-      searchResults = [];
-      var needle = new RegExp($('#search-box > input').val(), 'i');
-      forAllNodes(function(addr, node) {
-          if (node['Value'] && node['Value'].match(needle)) {
-            searchResults.push(addr);
+    if (!searchWorker) {
+      // spawn search worker
+      var blob = new Blob([$('#search-worker').text()], {type: 'text/javascript'});
+      searchWorker = new Worker(window.URL.createObjectURL(blob));
+      searchWorker.onmessage = function(e) {
+        if (e.data.finished) {
+          $('#search-box > input').removeClass('flash');
+          $('#search-box > button').removeClass('flash');
+        } else {
+          searchResults.push(e.data.addr);
+          if (searchIndex < 0) {
+            searchIndex = 0;
+            $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
+            gotoNode(searchResults[0]);
           }
-      });
-      if (searchResults.length < 0) {
-        console.error('no search result');
-        return;
-      } else {
-        searchIndex = 0;
+        }
       }
-    }
 
-    $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
-    gotoNode(searchResults[searchIndex]);
+      // clear results
+      searchIndex = -1;
+      searchResults = [];
+
+      // go
+      searchWorker.postMessage({
+          tree: tree,
+          needle: $('#search-box > input').val()
+      });
+      $('#search-box > input').addClass('flash');
+      $('#search-box > button').addClass('flash');
+    } else {
+      searchIndex = (searchIndex + 1) % searchResults.length;
+      $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
+      gotoNode(searchResults[searchIndex]);
+    }
 });
 $('#search-box > input').on('change', function() {
-    searchIndex = -1;
+    if (searchWorker) {
+      searchWorker.terminate();
+      searchWorker = false;
+      $('#search-box > input').removeClass('flash');
+      $('#search-box > button').removeClass('flash');
+    }
 });
+
+setInterval(function() {
+  var index = searchIndex < 0 ? 0 : (searchIndex + 1)
+  $('#search-results').text(index + ' / ' + searchResults.length);
+}, 200);
 
 // ------------------------------------------------------------ Events
 

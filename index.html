@@ -10,38 +10,40 @@
   <body>
 
     <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <span class="navbar-brand">INSPYER</span>
+      <span class="navbar-brand">INSPYER</span>
 
-        <form id="load-box" class="navbar-form navbar-left">
-          <div class="form-group">
-            <input type="file" id="input-tree" class="form-control" />
-          </div>
-          <button type="button" id="input-tree-reload" class="btn btn-default">
-            <span class="glyphicon glyphicon-refresh"></span>
-          </button>
-        </form>
+      <form id="load-box" class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="file" id="input-tree" class="form-control" />
+        </div>
+        <button type="button" id="input-tree-reload" class="btn btn-default">
+          <span class="glyphicon glyphicon-refresh"></span>
+        </button>
+      </form>
 
-        <form class="navbar-form navbar-right">
-          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#more-dialog">
-            <span class="glyphicon glyphicon-menu-hamburger"></span>
-          </button>
-        </form>
+      <form class="navbar-form navbar-right">
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#more-dialog">
+          <span class="glyphicon glyphicon-menu-hamburger"></span>
+        </button>
+      </form>
 
-        <form id="search-box" class="navbar-form navbar-right">
-          <input type="text" class="form-control" placeholder="Search..." />
-          <button type="submit" class="btn btn-default">
-            <span class="glyphicon glyphicon-search"></span>
-          </button>
-        </form>
-
-        <form id="goto-box" class="navbar-form navbar-right">
-          <input type="text" class="form-control" placeholder="0-1-2-3" pattern="0(-(0|[1-9]\d*))*" />
-          <button type="submit" class="btn btn-default">
-            <span class="glyphicon glyphicon-screenshot"></span>
-          </button>
-        </form>
+      <div id="search-results-box" class="navbar-right">
+        <span id="search-results">0 / 0</span>
       </div>
+
+      <form id="search-box" class="navbar-form navbar-right">
+        <input type="text" class="form-control" placeholder="Search..." />
+        <button type="submit" class="btn btn-default">
+          <span class="glyphicon glyphicon-search"></span>
+        </button>
+      </form>
+
+      <form id="goto-box" class="navbar-form navbar-right">
+        <input type="text" class="form-control" placeholder="0-1-2-3" pattern="0(-(0|[1-9]\d*))*" />
+        <button type="submit" class="btn btn-default">
+          <span class="glyphicon glyphicon-screenshot"></span>
+        </button>
+      </form>
     </nav>
 
     <div id="tree"></div>
@@ -81,7 +83,44 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/node_logic.js"></script>
+
     <!-- <script src="js/debug.js"></script> -->
     <!-- <script src="js/debug_meta.js"></script> -->
+
+    <!-- Worker API requires an external file, but loading script later on is
+    not possible locally due to security reasons. A workaround is to have the
+    script embedded and create a Blob from the embedded code which will be
+    passed to the worker. Chaning the type of the script tag will prevent the
+    browser from executing the code right away -->
+    <script id="search-worker" type="javascript/worker">
+
+      function forAllNodes(tree, f, node=undefined, address=[]) {
+        if (!node) {
+          node = tree[tree['root']];
+        }
+
+        f(address, node);
+
+        for (var i in node['Children']) {
+          forAllNodes(tree, f, tree[node['Children'][i]], address.concat([i]));
+        }
+      }
+
+      self.onmessage = function(e) {
+        var needle = new RegExp(e.data.needle, 'i');
+        console.info('Starting search for: ' + e.data.needle);
+
+        forAllNodes(e.data.tree, function(addr, node) {
+            if (node['Value'] && node['Value'].match(needle)) {
+              self.postMessage({finished: false, addr: addr});
+            }
+        });
+
+        console.info('Search finished');
+
+        self.postMessage({finished: true});
+      }
+    </script>
+
   </body>
 </html>
