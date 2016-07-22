@@ -1,12 +1,8 @@
 @charset "UTF-8";
 
 body {
-  margin-top: 140px;
+  margin-top: 80px;
   margin-bottom: 800px;
-}
-
-.navbar {
-  padding: 5px 20px;
 }
 
 #load-box td {

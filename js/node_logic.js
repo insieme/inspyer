@@ -5,11 +5,16 @@
 var tree = {}
 var resolveCache = {};
 var meta = {};
+var searchIndex = -1;
+var searchResults = [];
 
 // ------------------------------------------------------------ Register
 
 // register load
-$('#input-tree').on('change', loadInputTree);
+$('#input-tree').on('change', function() {
+    $('#input-tree-meta').val('');
+    loadInputTree();
+});
 $('#input-tree-reload').click(loadInputTree);
 function loadInputTree() {
   var file = $('#input-tree')[0].files[0]
@@ -18,13 +23,16 @@ function loadInputTree() {
     tree = JSON.parse(this.result);
     $('#tree').empty();
     loadRoot();
+    if ($('#input-tree-meta')[0].files.length > 0) {
+      loadInputTreeMeta();
+    }
   }
   console.info('Loading: ' + file.name);
   reader.readAsText(file);
 }
 
+// register load meta
 $('#input-tree-meta').on('change', loadInputTreeMeta);
-$('#input-tree-meta-reload').click(loadInputTreeMeta);
 function loadInputTreeMeta() {
   var file = $('#input-tree-meta')[0].files[0];
   var reader = new FileReader();
@@ -40,6 +48,35 @@ function loadInputTreeMeta() {
 $('#goto-box').submit(function(e) {
     e.preventDefault();
     gotoNode(id2addr($('#goto-box input').val()));
+});
+
+// register search
+$('#search-box').submit(function(e) {
+    e.preventDefault();
+
+    if (searchIndex >= 0) {
+      searchIndex = (searchIndex + 1) % searchResults.length;
+    } else {
+      searchResults = [];
+      var needle = new RegExp($('#search-box > input').val(), 'i');
+      forAllNodes(function(addr, node) {
+          if (node['Value'] && node['Value'].match(needle)) {
+            searchResults.push(addr);
+          }
+      });
+      if (searchResults.length < 0) {
+        console.error('no search result');
+        return;
+      } else {
+        searchIndex = 0;
+      }
+    }
+
+    $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
+    gotoNode(searchResults[searchIndex]);
+});
+$('#search-box > input').on('change', function() {
+    searchIndex = -1;
 });
 
 // ------------------------------------------------------------ Events
@@ -116,10 +153,9 @@ function mkNode(address) {
   } else if (node['Kind'] == 'FunctionType') {
     var param = getTypes(tree[node['Children'][0]]).join(', ');
     var ret = getTypes(tree[node['Children'][1]]);
-    type = '<span class="label label-info">( ' + param + ' ) -> ' + ret + '</span>';
+    type = '<span class="label label-info">( ' + param + ' ) &nbsp;&nbsp;<span class="glyphicon glyphicon-arrow-right"></span>&nbsp;&nbsp; ' + ret + '</span>';
   } else if (node['Kind'] == 'TypeVariable') {
-    var type = tree[node['Children'][0]]['Value'];
-    type = '<span class="label label-info">' + type + '</span>';
+    type = '<span class="label label-info">' + tree[node['Children'][0]]['Value'] + '</span>';
   } else {
     type = '<span class="label label-info">' + getTypes(node) + '</span>';
   }
@@ -285,7 +321,11 @@ function isType(node) {
 function getTypes(node) {
 
   if (node['Kind'] == 'GenericType') {
-    return tree[node['Children'][0]]['Value'];
+    var types = getTypes(tree[node['Children'][2]]);
+    if (types.length == 0) {
+      return tree[node['Children'][0]]['Value'];
+    }
+    return tree[node['Children'][0]]['Value'] + '&lt;' + types.join(' , ') + '&gt;';
   }
 
   if (node['Kind'] == 'TupleType') {
@@ -302,6 +342,11 @@ function getTypes(node) {
 
   if (node['Kind'] == 'TypeVariable') {
     return tree[node['Children'][0]]['Value'];
+  }
+
+  if (node['Kind'] == 'NumericType') {
+    var lit = tree[node['Children'][0]];
+    return tree[lit['Children'][1]]['Value'];
   }
 
   return '';
