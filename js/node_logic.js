@@ -89,6 +89,13 @@ $('#search-box').submit(function(e) {
       gotoNode(searchResults[searchIndex]);
     }
 });
+$('#search-box-backward').click(function() {
+    if (searchWorker && searchResults.length > 0) {
+      searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
+      $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
+      gotoNode(searchResults[searchIndex]);
+    }
+});
 $('#search-box > input').on('change', function() {
     if (searchWorker) {
       searchWorker.terminate();
