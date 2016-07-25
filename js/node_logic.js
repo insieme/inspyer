@@ -298,6 +298,7 @@ function showNode(address) {
 
 // Attach root node.
 function loadRoot() {
+  resolveCache = {};
   $('#tree').html(mkNode([]));
 }
 
