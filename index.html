@@ -13,39 +13,60 @@
       <span class="navbar-brand">INSPYER</span>
 
       <form id="load-box" class="navbar-form navbar-left">
-        <div class="form-group">
+        <div class="input-group">
           <input type="file" id="input-tree" class="form-control" />
+          <span class="input-group-btn">
+            <button type="button" id="input-tree-reload" class="btn btn-default">
+              <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+          </span>
         </div>
-        <button type="button" id="input-tree-reload" class="btn btn-default">
-          <span class="glyphicon glyphicon-refresh"></span>
-        </button>
       </form>
 
-      <form class="navbar-form navbar-right">
+      <div id="bookmark-box" class="navbar-form navbar-left">
+        <div class="input-group">
+          <span class="input-group-btn">
+            <button id="bookmark-backward" class="btn btn-default">
+              <span class="glyphicon glyphicon-chevron-left"></span>
+            </button>
+            <button id="bookmark-forward" class="btn btn-default">
+              <span class="glyphicon glyphicon-chevron-right"></span>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="navbar-form navbar-right">
         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#more-dialog">
           <span class="glyphicon glyphicon-menu-hamburger"></span>
         </button>
-      </form>
-
-      <div id="search-results-box" class="navbar-right">
-        <span id="search-results">0 / 0</span>
       </div>
 
       <form id="search-box" class="navbar-form navbar-right">
-        <input type="text" class="form-control" placeholder="Search..." />
-        <button id="search-box-backward" type="button" class="btn btn-default">
-          <span class="glyphicon glyphicon-chevron-left"></span>
-        </button>
-        <button id="search-box-forward" type="submit" class="btn btn-default">
-          <span class="glyphicon glyphicon-chevron-right"></span>
-        </button>
+        <div class="input-group">
+          <span id="search-results" class="input-group-addon">0 / 0</span>
+          <input type="text" class="form-control" placeholder="Search..." />
+          <span class="input-group-btn">
+            <button id="search-box-backward" type="button" class="btn btn-default">
+              <span class="glyphicon glyphicon-chevron-left"></span>
+            </button>
+            <button id="search-box-forward" type="submit" class="btn btn-default">
+              <span class="glyphicon glyphicon-chevron-right"></span>
+            </button>
+          </span>
+        </div>
       </form>
-
+    </nav>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-lower">
       <form id="goto-box" class="navbar-form navbar-right">
-        <input type="text" class="form-control" placeholder="0-1-2-3" pattern="0(-(0|[1-9]\d*))*" />
-        <button type="submit" class="btn btn-default">
-          <span class="glyphicon glyphicon-screenshot"></span>
-        </button>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="0-1-2-3" pattern="0(-(0|[1-9]\d*))*" />
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-default">
+              <span class="glyphicon glyphicon-screenshot"></span>
+            </button>
+          </span>
+        </div>
       </form>
     </nav>
 

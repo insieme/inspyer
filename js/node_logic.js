@@ -5,6 +5,8 @@
 var tree = {}
 var resolveCache = {};
 var meta = {};
+var bookmarkIndex = 0;
+var bookmarks = [];
 var searchIndex = -1;
 var searchResults = [];
 var searchWorker = false;
@@ -31,6 +33,22 @@ function loadInputTree() {
   console.info('Loading: ' + file.name);
   reader.readAsText(file);
 }
+
+// register bookmark buttons
+$('#bookmark-forward').click(function () {
+    if (bookmarks.length > 0) {
+      bookmarkIndex = (bookmarkIndex + 1) % bookmarks.length;
+      gotoNode(id2addr(bookmarks[bookmarkIndex]));
+      $('#goto-box input').val(bookmarks[bookmarkIndex]);
+    }
+});
+$('#bookmark-backward').click(function () {
+    if (bookmarks.length > 0) {
+      bookmarkIndex = (bookmarkIndex - 1 + bookmarks.length) % bookmarks.length;
+      gotoNode(id2addr(bookmarks[bookmarkIndex]));
+      $('#goto-box input').val(bookmarks[bookmarkIndex]);
+    }
+});
 
 // register load meta
 $('#input-tree-meta').on('change', loadInputTreeMeta);
@@ -60,13 +78,13 @@ $('#search-box').submit(function(e) {
       searchWorker = new Worker(window.URL.createObjectURL(blob));
       searchWorker.onmessage = function(e) {
         if (e.data.finished) {
-          $('#search-box > input').removeClass('flash');
-          $('#search-box > button').removeClass('flash');
+          $('#search-box input').removeClass('flash');
+          $('#search-box button').removeClass('flash');
         } else {
           searchResults.push(e.data.addr);
           if (searchIndex < 0) {
             searchIndex = 0;
-            $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
+            $('#goto-box input').val(addr2id(searchResults[searchIndex]));
             gotoNode(searchResults[0]);
           }
         }
@@ -79,29 +97,29 @@ $('#search-box').submit(function(e) {
       // go
       searchWorker.postMessage({
           tree: tree,
-          needle: $('#search-box > input').val()
+          needle: $('#search-box input').val()
       });
-      $('#search-box > input').addClass('flash');
-      $('#search-box > button').addClass('flash');
+      $('#search-box input').addClass('flash');
+      $('#search-box button').addClass('flash');
     } else if (searchResults.length > 0) {
       searchIndex = (searchIndex + 1) % searchResults.length;
-      $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
+      $('#goto-box input').val(addr2id(searchResults[searchIndex]));
       gotoNode(searchResults[searchIndex]);
     }
 });
 $('#search-box-backward').click(function() {
     if (searchWorker && searchResults.length > 0) {
       searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
-      $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
+      $('#goto-box input').val(addr2id(searchResults[searchIndex]));
       gotoNode(searchResults[searchIndex]);
     }
 });
-$('#search-box > input').on('change', function() {
+$('#search-box input').on('change', function() {
     if (searchWorker) {
       searchWorker.terminate();
       searchWorker = false;
-      $('#search-box > input').removeClass('flash');
-      $('#search-box > button').removeClass('flash');
+      $('#search-box input').removeClass('flash');
+      $('#search-box button').removeClass('flash');
     }
 });
 
@@ -175,6 +193,20 @@ function mkNode(address) {
     hl = 'node-hl-variable';
   }
 
+  // bookmark
+  var bm = $('<span class="bookmark glyphicon btn">').click(function() {
+      if (bookmarks.indexOf(id) < 0) {
+        addBookmark(id);
+      } else {
+        removeBookmark(id);
+      }
+  });
+  if (bookmarks.indexOf(id) < 0) {
+    bm.addClass('glyphicon-star-empty');
+  } else {
+    bm.addClass('glyphicon-star');
+  }
+
   // add type
   var type = '';
   if (node['Kind'] == 'Types') {
@@ -228,6 +260,7 @@ function mkNode(address) {
     ),
 
     $('<div class="displaytext">').append(
+      bm,
       $('<span class="address">').text('[ ' + id + ' ]'),
       $('<span class="kind">').text(node['Kind']),
       $('<span class="type">').html(type),
@@ -268,6 +301,24 @@ function loadRoot() {
   $('#tree').html(mkNode([]));
 }
 
+// ------------------------------------------------------------ Bookmark
+
+function addBookmark(id) {
+  if (bookmarks.indexOf(id) < 0) {
+    $('#' + id + '> .displaytext > .bookmark').addClass('glyphicon-star').removeClass('glyphicon-star-empty');
+    bookmarks.push(id);
+    bookmarks.sort();
+  }
+}
+
+function removeBookmark(id) {
+  var index = bookmarks.indexOf(id);
+  if (index >= 0) {
+    $('#' + id + '> .displaytext > .bookmark').addClass('glyphicon-star-empty').removeClass('glyphicon-star');
+    bookmarks.splice(index, 1);
+  }
+}
+
 // ------------------------------------------------------------ Meta
 
 function loadMeta() {
@@ -275,8 +326,18 @@ function loadMeta() {
     expandToNode(id2addr(meta['expandTo'][i]));
   }
 
-  gotoNode(id2addr(meta['goto']));
-  $('#goto-box > input').val(meta['goto']);
+  if (meta['bookmarks']) {
+    bookmarks = meta['bookmarks'];
+    bookmarks.sort();
+    if (bookmarks.length > 0) {
+      gotoNode(id2addr(bookmarks[0]));
+      $('#goto-box input').val(bookmarks[0]);
+    }
+  }
+
+  for (var id in bookmarks) {
+    $('#' + bookmarks[id] + '> .displaytext > .bookmark').addClass('glyphicon-star').removeClass('glyphicon-star-empty');
+  }
 
   for (var id in meta['labels']) {
     $('#' + id + '> .displaytext > .meta-label').html(
