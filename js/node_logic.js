@@ -83,7 +83,7 @@ $('#search-box').submit(function(e) {
       });
       $('#search-box > input').addClass('flash');
       $('#search-box > button').addClass('flash');
-    } else {
+    } else if (searchResults.length > 0) {
       searchIndex = (searchIndex + 1) % searchResults.length;
       $('#goto-box > input').val(addr2id(searchResults[searchIndex]));
       gotoNode(searchResults[searchIndex]);
