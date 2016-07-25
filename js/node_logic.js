@@ -327,7 +327,8 @@ function loadMeta() {
   }
 
   if (meta['bookmarks']) {
-    bookmarks = meta['bookmarks'];
+    bookmarks = bookmarks.concat(meta['bookmarks']);
+    bookmarks = Array.from(new Set(bookmarks));
     bookmarks.sort();
     if (bookmarks.length > 0) {
       gotoNode(id2addr(bookmarks[0]));
