@@ -322,8 +322,8 @@ function removeBookmark(id) {
 // ------------------------------------------------------------ Meta
 
 function loadMeta() {
-  for (var i in meta['expandTo']) {
-    expandToNode(id2addr(meta['expandTo'][i]));
+  for (var i in meta['expands']) {
+    expandToNode(id2addr(meta['expands'][i]));
   }
 
   if (meta['bookmarks']) {
@@ -350,8 +350,8 @@ function loadMeta() {
     $('#' + meta['highlights'][i]).addClass('node-hl');
   }
 
-  for (var id in meta['body']) {
-    $('#' + id + '> .body > .text').html(meta['body'][id]);
+  for (var id in meta['bodies']) {
+    $('#' + id + '> .body > .text').html(meta['bodies'][id]);
   }
 }
 
