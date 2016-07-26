@@ -1,48 +1,25 @@
 @charset "UTF-8";
 
 body {
-  margin-top: 140px;
+  margin-top: 80px;
   margin-bottom: 800px;
 }
 
 .navbar {
   padding: 0px 20px;
-}
-
-.navbar-lower {
-  top: 50px;
-}
-
-#bookmark-box {
-  margin-left: 50px;
-}
-
-#goto-box {
-  margin-right: 55px;
-}
-
-#goto-box input {
-  width: 235px;
-}
-
-#load-box td {
-  padding-right: 8px;
+  min-width: 1120px;
 }
 
 .label {
   font-weight: lighter;
 }
 
-#search-results-box {
-  display: inline-block;
-  padding-top: 1em;
-  width: 80px;
-  text-align: right;
+#tree {
+  padding-right: 6px;
 }
 
 .node {
   margin: 2px 0px 2px 6px;
-  padding: 2px 0px 2px 2px;
   border: solid thin lightblue;
   background-color: #fdfdfd;
 }

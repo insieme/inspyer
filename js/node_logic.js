@@ -300,6 +300,9 @@ function showNode(address) {
 function loadRoot() {
   resolveCache = {};
   $('#tree').html(mkNode([]));
+  if (bookmarks.length > 0) {
+    gotoNode(id2addr(bookmarks[bookmarkIndex]));
+  }
 }
 
 // ------------------------------------------------------------ Bookmark

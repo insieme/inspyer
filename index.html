@@ -3,7 +3,7 @@
   <head>
     <title>INSPYER</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta name="viewport" content="width=device&#45;width, initial&#45;scale=1"> -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/base.css" rel="stylesheet">
   </head>
@@ -14,7 +14,9 @@
 
       <form id="load-box" class="navbar-form navbar-left">
         <div class="input-group">
-          <input type="file" id="input-tree" class="form-control" />
+          <label class="btn btn-default btn-file">
+            Browse <input type="file" id="input-tree" class="hidden" />
+          </label>
           <span class="input-group-btn">
             <button type="button" id="input-tree-reload" class="btn btn-default">
               <span class="glyphicon glyphicon-refresh"></span>
@@ -29,12 +31,28 @@
             <button id="bookmark-backward" class="btn btn-default">
               <span class="glyphicon glyphicon-chevron-left"></span>
             </button>
+          </span>
+          <div class="input-group-addon">
+            <span class="glyphicon glyphicon-star"></span>
+          </div>
+          <span class="input-group-btn">
             <button id="bookmark-forward" class="btn btn-default">
               <span class="glyphicon glyphicon-chevron-right"></span>
             </button>
           </span>
         </div>
       </div>
+
+      <form id="goto-box" class="navbar-form navbar-left">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="0-1-2-3" pattern="0(-(0|[1-9]\d*))*" />
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-default">
+              <span class="glyphicon glyphicon-screenshot"></span>
+            </button>
+          </span>
+        </div>
+      </form>
 
       <div class="navbar-form navbar-right">
         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#more-dialog">
@@ -56,18 +74,7 @@
           </span>
         </div>
       </form>
-    </nav>
-    <nav class="navbar navbar-default navbar-fixed-top navbar-lower">
-      <form id="goto-box" class="navbar-form navbar-right">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="0-1-2-3" pattern="0(-(0|[1-9]\d*))*" />
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-default">
-              <span class="glyphicon glyphicon-screenshot"></span>
-            </button>
-          </span>
-        </div>
-      </form>
+
     </nav>
 
     <div id="tree"></div>
