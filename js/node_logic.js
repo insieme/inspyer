@@ -29,7 +29,7 @@ function loadInputTree() {
   var reader = new FileReader();
   reader.onload = function() {
     tree = JSON.parse(this.result);
-    $('title').text('INSPYER ' + file.name);
+    $('title').text(file.name);
     $('#filename').text(file.name);
     $('#filename-box').show();
     $('#tree').empty();
@@ -141,9 +141,15 @@ setInterval(function() {
 function on_NodeExpand(id) {
   $('#' + id + '> .controls > a').text('[-]');
 
-  // load children
   var address = id2addr(id);
   var node = resolve(address);
+
+  // done if leaf
+  if (!('Children' in node)) {
+    return;
+  }
+
+  // load children
   for (var i = 0; i < node['Children'].length; i++) {
     showNode(address.concat([i]));
   }
@@ -433,7 +439,6 @@ function isType(node) {
 }
 
 function getTypes(node) {
-
   if (node['Kind'] == 'GenericType') {
     var types = getTypes(tree[node['Children'][2]]);
     if (types.length == 0) {
@@ -449,6 +454,9 @@ function getTypes(node) {
   }
 
   if (node['Kind'] == 'Types') {
+    if (!('Children' in node)) {
+      return [];
+    }
     return node['Children'].map(function(type) {
         return getTypes(tree[type]);
     });
@@ -463,5 +471,5 @@ function getTypes(node) {
     return tree[lit['Children'][1]]['Value'];
   }
 
-  return '';
+  return [];
 }
