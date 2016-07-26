@@ -3,7 +3,6 @@
   <head>
     <title>INSPYER</title>
     <meta charset="utf-8">
-    <!-- <meta name="viewport" content="width=device&#45;width, initial&#45;scale=1"> -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/base.css" rel="stylesheet">
   </head>
@@ -14,12 +13,18 @@
 
       <form id="load-box" class="navbar-form navbar-left">
         <div class="input-group">
-          <label class="btn btn-default btn-file">
-            Browse <input type="file" id="input-tree" class="hidden" />
-          </label>
           <span class="input-group-btn">
-            <button type="button" id="input-tree-reload" class="btn btn-default">
+            <label class="btn btn-default btn-file">
+              Load <input type="file" id="input-tree" class="hidden" />
+            </label>
+            <label class="btn btn-default btn-file">
+              Meta <input type="file" id="input-tree-meta" class="hidden" />
+            </label>
+            <button type="button" id="input-tree-reload" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Reload">
               <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+            <button type="button" id="input-tree-reload-hard" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Hard Reload">
+              <span class="glyphicon glyphicon-repeat"></span>
             </button>
           </span>
         </div>
@@ -47,7 +52,7 @@
         <div class="input-group">
           <input type="text" class="form-control" placeholder="0-1-2-3" pattern="0(-(0|[1-9]\d*))*" />
           <span class="input-group-btn">
-            <button type="submit" class="btn btn-default">
+            <button type="submit" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Goto">
               <span class="glyphicon glyphicon-screenshot"></span>
             </button>
           </span>
@@ -74,9 +79,12 @@
           </span>
         </div>
       </form>
-
     </nav>
 
+    <div id="filename-box" style="display: none;">
+      <span class="glyphicon glyphicon-file"></span>
+      <span id="filename"></span>
+    </div>
     <div id="tree"></div>
 
     <div id="more-dialog" class="modal fade" tabindex="-1" role="dialog">
@@ -87,6 +95,7 @@
           </div>
           <div class="modal-body">
 
+            <!--
             <form class="form-inline">
               <div class="form-group">
                 <label for="input-tree-meta">Meta Information</label>
@@ -95,6 +104,7 @@
             </form>
 
             <hr />
+            -->
 
             <span class="label label-default">Value</span>
             <span class="label label-info">Type</span>
@@ -114,6 +124,13 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/node_logic.js"></script>
+
+    <!-- initialize tooltips -->
+    <script>
+      $(function() {
+          $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+      });
+    </script>
 
     <!-- <script src="js/debug.js"></script> -->
     <!-- <script src="js/debug_meta.js"></script> -->

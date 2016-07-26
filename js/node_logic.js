@@ -16,14 +16,22 @@ var searchWorker = false;
 // register load
 $('#input-tree').on('change', function() {
     $('#input-tree-meta').val('');
+    bookmarks = [];
     loadInputTree();
 });
 $('#input-tree-reload').click(loadInputTree);
+$('#input-tree-reload-hard').click(function () {
+    bookmarks = [];
+    loadInputTree();
+});
 function loadInputTree() {
   var file = $('#input-tree')[0].files[0]
   var reader = new FileReader();
   reader.onload = function() {
     tree = JSON.parse(this.result);
+    $('title').text('INSPYER ' + file.name);
+    $('#filename').text(file.name);
+    $('#filename-box').show();
     $('#tree').empty();
     loadRoot();
     if ($('#input-tree-meta')[0].files.length > 0) {
@@ -172,6 +180,7 @@ function gotoNode(address) {
   }, 400);
 
   // highlight
+  $('.node .flash').removeClass('flash');
   $('#' + id).addClass('flash');
   setTimeout(function() {
       $('#' + id).removeClass('flash');

@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 body {
-  margin-top: 80px;
+  margin-top: 90px;
   margin-bottom: 800px;
 }
 
@@ -12,6 +12,20 @@ body {
 
 .label {
   font-weight: lighter;
+}
+
+#filename-box {
+  top: 49px;
+  right: -1px;
+  position: fixed;
+  z-index: 1040;
+
+  background-color: #f8f8f8;
+  border: solid thin #e7e7e7;
+  border-top: none;
+
+  font-size: 16px;
+  padding: 5px 10px;
 }
 
 #tree {
