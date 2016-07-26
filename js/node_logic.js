@@ -242,8 +242,12 @@ function mkNode(address) {
   var value = '';
   if (node['Value']) {
     value = '<span class="label label-default">' + node['Value'] + '</span>';
-  } else if(node['Kind'] == 'Literal') {
+  } else if (node['Kind'] == 'Literal') {
     value = tree[node['Children'][1]]['Value'];
+    value = '<span class="label label-default">' + value + '</span>';
+  } else if (node['Kind'] == 'CallExpr' || node['Kind'] == 'InitExpr') {
+    value = tree[node['Children'][1]];
+    value = tree[value['Children'][1]]['Value'];
     value = '<span class="label label-default">' + value + '</span>';
   }
 
@@ -266,7 +270,7 @@ function mkNode(address) {
     if (tree[node['Children'][1]]['Kind'] == 'Variable') {
       var v = tree[node['Children'][1]];
       v = tree[v['Children'][1]]['Value'];
-      return '<span class="label label-danger">' + v + '</span>';
+      variable = '<span class="label label-danger">' + v + '</span>';
     }
   }
 
