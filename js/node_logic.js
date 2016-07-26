@@ -256,6 +256,12 @@ function mkNode(address) {
       v = tree[v['Children'][1]]['Value'];
       return '<span class="label label-danger">' + v + '</span>';
     }).join(' ');
+  } else if (node['Kind'] == 'Declaration') {
+    if (tree[node['Children'][1]]['Kind'] == 'Variable') {
+      var v = tree[node['Children'][1]];
+      v = tree[v['Children'][1]]['Value'];
+      return '<span class="label label-danger">' + v + '</span>';
+    }
   }
 
   var body = "";
