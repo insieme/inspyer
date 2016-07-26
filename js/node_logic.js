@@ -265,7 +265,9 @@ function mkNode(address) {
   }
 
   var body = "";
-  if (node['Value']) {
+  if ('bodies' in meta && meta['bodies'] && id in meta['bodies']) {
+    body = meta['bodies'][id];
+  } else if (node['Value']) {
     body = $('<pre>').text('Value: ' + node['Value']);
   }
 
