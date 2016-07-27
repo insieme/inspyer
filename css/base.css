@@ -74,10 +74,6 @@ body {
   margin-right: 8px;
 }
 
-.node > .body {
-  padding: 2px;
-}
-
 .node > .body > .text {
   margin-left: 10px;
   padding-left: 2px;
