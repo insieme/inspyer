@@ -10,6 +10,7 @@
   <body>
 
     <nav class="navbar navbar-default navbar-fixed-top">
+
       <span class="navbar-brand">INSPYER</span>
 
       <form id="load-box" class="navbar-form navbar-left">
@@ -125,6 +126,7 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/node_logic.js"></script>
+    <script src="js/node.js"></script>
 
     <!-- initialize tooltips -->
     <script>
@@ -133,8 +135,9 @@
       });
     </script>
 
-    <!-- <script src="js/debug.js"></script> -->
+    <script src="js/debug.js"></script>
     <!-- <script src="js/debug_meta.js"></script> -->
+    <script>var n = new Node('0x30b8270', tree); $('#tree').html(n.getElement());</script>
 
     <!-- Worker API requires an external file, but loading script later on is
     not possible locally due to security reasons. A workaround is to have the
