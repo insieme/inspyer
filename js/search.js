@@ -2,6 +2,7 @@
 
 // REQUIRES
 // - goto
+// - message
 
 var searchRootNode;
 var searchResults = [];
@@ -33,11 +34,13 @@ function searchResultsRefresherStop() {
 
 function startSearch() {
   if (!searchWorker) {
+    addMessage('Starting Search');
     // spawn search worker
     var blob = new Blob([$('#search-worker').text()], {type: 'text/javascript'});
     searchWorker = new Worker(window.URL.createObjectURL(blob));
     searchWorker.onmessage = function(e) {
       if (e.data.finished) {
+        addMessage('Search finished');
         $('#search-box input').removeClass('flash');
         $('#search-box button').removeClass('flash');
         searchResultsRefresherStop();
@@ -75,6 +78,7 @@ function resetSearch() {
 
 function stopSearch() {
   if (searchWorker) {
+    addMessage('Search stopped');
     searchWorker.terminate();
     $('#search-box input').removeClass('flash');
     $('#search-box button').removeClass('flash');

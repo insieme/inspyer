@@ -5,16 +5,19 @@
 // - goto
 // - bookmark
 // - search
+// - message
 
 var root;
 var tree;
 var meta;
 
 $('#input-tree').on('change', function(e) {
+    addMessage('Loading', e.target.files[0].name);
     loadTree(e.target.files[0]);
 });
 
 $('#input-tree-meta').on('change', function(e) {
+    addMessage('Loading Meta', e.target.files[0].name);
     loadMeta(e.target.files[0]);
 });
 
@@ -22,7 +25,7 @@ $('#input-tree-reload').click(function() {
     if ($('#input-tree-reload').hasClass('disabled')) {
       return;
     }
-    console.info('Reloading');
+    addMessage('Reloading');
 
     // stop search but keep results
     stopSearch();
@@ -36,7 +39,7 @@ $('#input-tree-reload-hard').click(function() {
     if ($('#input-tree-reload-hard').hasClass('disabled')) {
       return;
     }
-    console.info('Reloading even harder');
+    addMessage('Reloading even harder');
 
     // clear
     resetSearch();

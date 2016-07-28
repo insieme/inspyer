@@ -1,5 +1,8 @@
 'use strict'
 
+// REQUIRES
+// - message
+
 var gotoRootNode;
 
 function gotoNodeById(root, id) {
