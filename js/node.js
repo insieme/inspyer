@@ -10,6 +10,9 @@ function Node(ref, tree, id='0') {
   this.inputNodeChildren = tree[ref]['Children'] || [];
 
   this.children = [];
+
+  this.onDisplayLabel = function() { return ''; };
+  this.onDisplayBody = function() { return ''; };
 }
 
 Node.prototype.getPath = function() {
@@ -29,6 +32,10 @@ Node.prototype.walk = function(path, fun, onLast=false) {
 Node.prototype.loadChild = function(index) {
   for (var i = this.children.length; i <= index; i++) {
     this.children[i] = new Node(this.inputNodeChildren[i], this.tree, this.id + '-' + i);
+
+    // attach label and body callbacks
+    this.children[i].onDisplayLabel = this.onDisplayLabel;
+    this.children[i].onDisplayBody = this.onDisplayBody;
 
     // attach bookmark callbacks
     this.children[i].isBookmarked = this.isBookmarked;
@@ -69,45 +76,65 @@ Node.prototype.destroyElement = function() {
   }
 }
 
-Node.prototype.buildElement = function() {
-  var node = this;
-
-  // bookmark button
-  var bookmark = '';
-  if (this.onBookmarkAdd && this.onBookmarkRemove && this.isBookmarked) {
-    bookmark = $('<span class="btn bookmark glyphicon">').click(function () {
-        if (node.isBookmarked(node)) {
-          node.onBookmarkRemove(node);
-          bookmark.addClass('glyphicon-star-empty').removeClass('glyphicon-star');
-        } else {
-          node.onBookmarkAdd(node);
-          bookmark.addClass('glyphicon-star').removeClass('glyphicon-star-empty');
-        }
-    });
-    if (this.isBookmarked(this)) {
-      bookmark.addClass('glyphicon-star');
-    } else {
-      bookmark.addClass('glyphicon-star-empty');
-    }
+Node.prototype.refreshElement = function() {
+  if (!this.element) {
+    return;
   }
 
+  // bookmark button
+  this.element.find('> .displaytext > .bookmark').replaceWith(this.bookmarkButton());
+
+  // meta information
+  this.element.find('> .displaytext > .meta-label').html(this.onDisplayLabel(this));
+  this.element.find('> .body > .text').html(this.onDisplayBody(this));
+
+  // propagate
+  for (var i in this.children) {
+    this.children[i].refreshElement();
+  }
+}
+
+Node.prototype.bookmarkButton = function () {
+  if (!this.onBookmarkAdd || !this.onBookmarkRemove || !this.isBookmarked) {
+    return '';
+  }
+  var node = this;
+  var bookmark = $('<span class="btn bookmark glyphicon">').click(function () {
+      if (node.isBookmarked(node)) {
+        node.onBookmarkRemove(node);
+        bookmark.addClass('glyphicon-star-empty').removeClass('glyphicon-star');
+      } else {
+        node.onBookmarkAdd(node);
+        bookmark.addClass('glyphicon-star').removeClass('glyphicon-star-empty');
+      }
+  });
+  if (this.isBookmarked(this)) {
+    bookmark.addClass('glyphicon-star');
+  } else {
+    bookmark.addClass('glyphicon-star-empty');
+  }
+  return bookmark;
+}
+
+Node.prototype.buildElement = function() {
+  var node = this;
   return $('<div class="node">').attr('id', this.id).addClass(this.hlClass()).append(
     $('<div class="controls">').append(
       $('<a role="button" data-toggle="collapse">').attr('data-target', '#' + this.id + '-body').text('[+]')
     ),
 
     $('<div class="displaytext">').append(
-      bookmark,
+      this.bookmarkButton(),
       $('<span class="path">').text('[ ' + this.id + ' ]'),
       $('<span class="kind">').text(this.kind),
       $('<span class="type">').html('<span class="label label-info">' + this.displayType() + '</span>'),
-      $('<span class="value">').html(this.displayValue()),
-      $('<span class="variable">').html(this.displayVariable()),
-      $('<span class="meta-label">')
+      $('<span class="value">').html('<span class="label label-default">' + String(this.displayValue()) + '</span>'),
+      $('<span class="variable">').html('<span class="label label-danger">' + String(this.displayVariable()) + '</span>'),
+      $('<span class="meta-label">').html(this.onDisplayLabel(this))
     ),
 
     $('<div class="body collapse">').attr('id', this.id + '-body').append(
-      $('<div class="text">').html('TODO'),
+      $('<div class="text">').html(this.onDisplayBody(this)),
       $('<div class="children">')
     ).on('show.bs.collapse', function (e) {
         e.stopPropagation();
@@ -163,6 +190,14 @@ Node.prototype.flash = function() {
   var node = this;
   setTimeout(function() { node.getElement().removeClass('flash'); }, 2000);
   return this;
+}
+
+Node.prototype.addHl = function () {
+  this.getElement().addClass('node-hl');
+}
+
+Node.prototype.removeHl = function () {
+  this.getElement().removeClass('node-hl');
 }
 
 Node.prototype.hlClass = function() {
@@ -234,10 +269,12 @@ Node.prototype.displayValue = function() {
   }
 
   if (this.kind == 'CallExpr' || this.kind == 'InitExpr') {
-    value = this.getChild(1).getChild(1).value;
+    if (this.getChild(1).getChild(1).value) {
+      value = this.getChild(1).getChild(1).value;
+    }
   }
 
-  return '<span class="label label-default">' + value + '</span>';
+  return value;
 }
 
 Node.prototype.displayVariable = function() {
@@ -248,7 +285,9 @@ Node.prototype.displayVariable = function() {
   }
 
   if (this.kind == 'Declaration') {
-    variable = this.getChild(1).getChild(1).value;
+    if (this.getChild(1).getChild(1).value) {
+      variable = this.getChild(1).getChild(1).value;
+    }
   }
 
   if (this.kind == 'DeclarationStmt') {
@@ -261,5 +300,5 @@ Node.prototype.displayVariable = function() {
     }).join(' , ') + ' ] ';
   }
 
-  return '<span class="label label-danger">' + variable + '</span>';
+  return variable;
 }

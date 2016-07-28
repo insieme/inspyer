@@ -78,6 +78,19 @@ body {
   margin-right: 8px;
 }
 
+.node > .displaytext > .meta-label {
+  margin-left: 20px;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  line-height: 1;
+  background: #eee;
+  border-radius: .25em;
+}
+
+.node > .displaytext > .meta-label:empty {
+  display: none;
+}
+
 .node > .body > .text {
   margin-left: 10px;
   padding-left: 2px;

@@ -29,57 +29,84 @@ function searchResultsRefresherStop() {
   }
 }
 
+// ------------------------------------------------------------ Search
+
+function startSearch() {
+  if (!searchWorker) {
+    // spawn search worker
+    var blob = new Blob([$('#search-worker').text()], {type: 'text/javascript'});
+    searchWorker = new Worker(window.URL.createObjectURL(blob));
+    searchWorker.onmessage = function(e) {
+      if (e.data.finished) {
+        $('#search-box input').removeClass('flash');
+        $('#search-box button').removeClass('flash');
+        searchResultsRefresherStop();
+      } else {
+        searchResults.push(e.data.addr);
+        if (searchIndex < 0) {
+          searchIndex = 0;
+          gotoNode(searchRootNode, searchResults[0]);
+        }
+      }
+    }
+
+    // clear results
+    searchIndex = -1;
+    searchResults = [];
+
+    // go
+    searchWorker.postMessage({
+        tree: tree,
+        needle: $('#search-box input').val()
+    });
+    $('#search-box input').addClass('flash');
+    $('#search-box button').addClass('flash');
+    searchResultsRefresherStart();
+  }
+}
+
+function resetSearch() {
+  stopSearch();
+  searchWorker = false;
+  searchIndex = -1;
+  searchResults = [];
+  updatesearchResult();
+}
+
+function stopSearch() {
+  if (searchWorker) {
+    searchWorker.terminate();
+    $('#search-box input').removeClass('flash');
+    $('#search-box button').removeClass('flash');
+    searchResultsRefresherStop();
+  }
+}
+
 // ------------------------------------------------------------ Search controls
 
 $('#search-box').submit(function(e) {
     e.preventDefault();
     if (!searchWorker) {
-      // spawn search worker
-      var blob = new Blob([$('#search-worker').text()], {type: 'text/javascript'});
-      searchWorker = new Worker(window.URL.createObjectURL(blob));
-      searchWorker.onmessage = function(e) {
-        if (e.data.finished) {
-          $('#search-box input').removeClass('flash');
-          $('#search-box button').removeClass('flash');
-          searchResultsRefresherStop();
-        } else {
-          searchResults.push(e.data.addr);
-          if (searchIndex < 0) {
-            searchIndex = 0;
-            gotoNode(searchRootNode, searchResults[0]);
-          }
-        }
-      }
-
-      // clear results
-      searchIndex = -1;
-      searchResults = [];
-
-      // go
-      searchWorker.postMessage({
-          tree: tree,
-          needle: $('#search-box input').val()
-      });
-      $('#search-box input').addClass('flash');
-      $('#search-box button').addClass('flash');
-      searchResultsRefresherStart();
+      startSearch();
     } else if (searchResults.length > 0) {
       searchIndex = (searchIndex + 1) % searchResults.length;
+      if (!searchResultsRefresher) {
+        updatesearchResult();
+      }
       gotoNode(searchRootNode, searchResults[searchIndex]);
     }
 });
+
 $('#search-box-backward').click(function() {
-    if (searchWorker && searchResults.length > 0) {
+    if (!searchWorker) {
+      startSearch();
+    } else if (searchWorker && searchResults.length > 0) {
       searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
+      if (!searchResultsRefresher) {
+        updatesearchResult();
+      }
       gotoNode(searchRootNode, searchResults[searchIndex]);
     }
 });
-$('#search-box input').on('change', function() {
-    if (searchWorker) {
-      searchWorker.terminate();
-      searchWorker = false;
-      $('#search-box input').removeClass('flash');
-      $('#search-box button').removeClass('flash');
-      searchResultsRefresherStop();
-    }
-});
+
+$('#search-box input').on('change', resetSearch);

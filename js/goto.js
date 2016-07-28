@@ -7,7 +7,9 @@ function gotoNodeById(root, id) {
 }
 
 function gotoNode(root, path) {
-  $('#goto-box input').val(path);
+  $('#goto-box input').val(
+    '0' + path.map(function(i) { return '-' + i; }).join('')
+  );
   $('.node .flash').removeClass('flash');
   root.walk(path, function(node) {
       node.expand();

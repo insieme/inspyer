@@ -19,13 +19,13 @@
             <label class="btn btn-default btn-file">
               Load <input type="file" id="input-tree" class="hidden" />
             </label>
-            <label class="btn btn-default btn-file">
-              Meta <input type="file" id="input-tree-meta" class="hidden" />
+            <label id="input-tree-meta-btn" class="btn btn-default btn-file disabled">
+              Meta <input type="file" id="input-tree-meta" class="hidden" disabled />
             </label>
-            <button type="button" id="input-tree-reload" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Reload">
+            <button type="button" id="input-tree-reload" class="btn btn-default disabled" data-toggle="tooltip" data-placement="bottom" title="Reload">
               <span class="glyphicon glyphicon-refresh"></span>
             </button>
-            <button type="button" id="input-tree-reload-hard" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Hard Reload">
+            <button type="button" id="input-tree-reload-hard" class="btn btn-default disabled" data-toggle="tooltip" data-placement="bottom" title="Hard Reload">
               <span class="glyphicon glyphicon-repeat"></span>
             </button>
           </span>
@@ -112,11 +112,11 @@
 
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <!-- <script src="js/node_logic.js"></script> -->
     <script src="js/node.js"></script>
     <script src="js/goto.js"></script>
     <script src="js/bookmarks.js"></script>
     <script src="js/search.js"></script>
+    <script src="js/page_logic.js"></script>
 
     <!-- initialize tooltips -->
     <script>
@@ -125,33 +125,8 @@
       });
     </script>
 
-    <script src="js/debug.js"></script>
+    <!-- <script src="js/debug.js"></script> -->
     <!-- <script src="js/debug_meta.js"></script> -->
-    <script>
-      var root = new Node('0x30b8270', tree);
-
-      // goto
-      gotoRootNode = root;
-
-      // bookmarks
-      bookmarkRootNode = root;
-      root.isBookmarked = function(node) {
-        return bookmarks.indexOf(node.id) >= 0
-      };
-      root.onBookmarkAdd = function(node) {
-        bookmarks.push(node.id);
-        bookmarks.sort();
-      };
-      root.onBookmarkRemove = function(node) {
-        var index = bookmarks.indexOf(node.id);
-        bookmarks.splice(index, 1);
-      };
-
-      // search
-      searchRootNode = root;
-
-      $('#tree').html(root.getElement());
-    </script>
 
     <!-- Worker API requires an external file, but loading script later on is
     not possible locally due to security reasons. A workaround is to have the
