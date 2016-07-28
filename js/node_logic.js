@@ -43,6 +43,7 @@ function loadInputTree() {
 }
 
 // register bookmark buttons
+/*
 $('#bookmark-forward').click(function () {
     if (bookmarks.length > 0) {
       bookmarkIndex = (bookmarkIndex + 1) % bookmarks.length;
@@ -57,6 +58,7 @@ $('#bookmark-backward').click(function () {
       $('#goto-box input').val(bookmarks[bookmarkIndex]);
     }
 });
+*/
 
 // register load meta
 $('#input-tree-meta').on('change', loadInputTreeMeta);
@@ -72,10 +74,12 @@ function loadInputTreeMeta() {
 }
 
 // register goto
+/*
 $('#goto-box').submit(function(e) {
     e.preventDefault();
     gotoNode(id2addr($('#goto-box input').val()));
 });
+*/
 
 // register search
 $('#search-box').submit(function(e) {
@@ -131,10 +135,12 @@ $('#search-box input').on('change', function() {
     }
 });
 
+/*
 setInterval(function() {
   var index = searchIndex < 0 ? 0 : (searchIndex + 1)
   $('#search-results').text(index + ' / ' + searchResults.length);
 }, 200);
+*/
 
 // ------------------------------------------------------------ Events
 
@@ -175,7 +181,7 @@ function expandToNode(address) {
 }
 
 // Expand folds to target node, scroll there and highlight target.
-function gotoNode(address) {
+function gotoNode2(address) {
   var id = addr2id(address);
 
   expandToNode(address);

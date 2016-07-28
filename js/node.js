@@ -12,23 +12,28 @@ function Node(ref, tree, id='0') {
   this.children = [];
 }
 
-Node.prototype.getAddress = function() {
+Node.prototype.getPath = function() {
   return this.id.substring(this.id.indexOf('0')).split('-').slice(1);
 }
 
-Node.prototype.walkPath = function(address, fun) {
+Node.prototype.walk = function(path, fun, onLast=false) {
   var node = this;
-  for (var i in address) {
+  for (var i in path) {
     if (fun) fun(node);
-    node = node.getChild(address[i]);
+    node = node.getChild(path[i]);
   }
-  if (fun) fun(node);
+  if (fun && onLast) fun(node);
   return node;
 }
 
 Node.prototype.loadChild = function(index) {
   for (var i = this.children.length; i <= index; i++) {
     this.children[i] = new Node(this.inputNodeChildren[i], this.tree, this.id + '-' + i);
+
+    // attach bookmark callbacks
+    this.children[i].isBookmarked = this.isBookmarked;
+    this.children[i].onBookmarkAdd = this.onBookmarkAdd;
+    this.children[i].onBookmarkRemove = this.onBookmarkRemove;
   }
 }
 
@@ -52,22 +57,48 @@ Node.prototype.getElement = function() {
 }
 
 Node.prototype.destroyElement = function() {
-  this.element.remove();
-  this.element = undefined;
+  if (this.element) {
+    this.element.remove();
+    this.element = undefined;
+  }
+
+  // propagate destruction, this is necessary to handle correct re-registration
+  // of callbacks (button click events and so on)
+  for (var i in this.children) {
+    this.children[i].destroyElement();
+  }
 }
 
 Node.prototype.buildElement = function() {
   var node = this;
 
-  console.info('build element');
+  // bookmark button
+  var bookmark = '';
+  if (this.onBookmarkAdd && this.onBookmarkRemove && this.isBookmarked) {
+    bookmark = $('<span class="btn bookmark glyphicon">').click(function () {
+        if (node.isBookmarked(node)) {
+          node.onBookmarkRemove(node);
+          bookmark.addClass('glyphicon-star-empty').removeClass('glyphicon-star');
+        } else {
+          node.onBookmarkAdd(node);
+          bookmark.addClass('glyphicon-star').removeClass('glyphicon-star-empty');
+        }
+    });
+    if (this.isBookmarked(this)) {
+      bookmark.addClass('glyphicon-star');
+    } else {
+      bookmark.addClass('glyphicon-star-empty');
+    }
+  }
+
   return $('<div class="node">').attr('id', this.id).addClass(this.hlClass()).append(
     $('<div class="controls">').append(
       $('<a role="button" data-toggle="collapse">').attr('data-target', '#' + this.id + '-body').text('[+]')
     ),
 
     $('<div class="displaytext">').append(
-      $('<span class="btn bookmark glyphicon">').addClass('glyphicon-star'),
-      $('<span class="address">').text('[ ' + this.id + ' ]'),
+      bookmark,
+      $('<span class="path">').text('[ ' + this.id + ' ]'),
       $('<span class="kind">').text(this.kind),
       $('<span class="type">').html('<span class="label label-info">' + this.displayType() + '</span>'),
       $('<span class="value">').html(this.displayValue()),
@@ -124,13 +155,14 @@ Node.prototype.goto = function() {
   $('html, body').animate({
       scrollTop: this.getElement().offset().top - 200
   }, 400);
-  this.flash();
+  return this;
 }
 
 Node.prototype.flash = function() {
   this.getElement().addClass('flash');
   var node = this;
   setTimeout(function() { node.getElement().removeClass('flash'); }, 2000);
+  return this;
 }
 
 Node.prototype.hlClass = function() {

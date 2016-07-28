@@ -68,7 +68,7 @@ body {
   margin-right: 12px;
 }
 
-.node > .displaytext > .address {
+.node > .displaytext > .path {
   font-family: monospace;
   font-size: 8pt;
   margin-right: 8px;

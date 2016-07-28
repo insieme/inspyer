@@ -96,23 +96,10 @@
             <h4 class="modal-title">More...</h4>
           </div>
           <div class="modal-body">
-
-            <!--
-            <form class="form-inline">
-              <div class="form-group">
-                <label for="input-tree-meta">Meta Information</label>
-                <input type="file" id="input-tree-meta" class="form-control" />
-              </div>
-            </form>
-
-            <hr />
-            -->
-
             <span class="label label-default">Value</span>
             <span class="label label-info">Type</span>
             <span class="label label-danger">Variable</span>
             <span class="label label-success">Meta Information</span>
-
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">
@@ -125,8 +112,11 @@
 
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/node_logic.js"></script>
+    <!-- <script src="js/node_logic.js"></script> -->
     <script src="js/node.js"></script>
+    <script src="js/goto.js"></script>
+    <script src="js/bookmarks.js"></script>
+    <script src="js/search.js"></script>
 
     <!-- initialize tooltips -->
     <script>
@@ -137,7 +127,31 @@
 
     <script src="js/debug.js"></script>
     <!-- <script src="js/debug_meta.js"></script> -->
-    <script>var n = new Node('0x30b8270', tree); $('#tree').html(n.getElement());</script>
+    <script>
+      var root = new Node('0x30b8270', tree);
+
+      // goto
+      gotoRootNode = root;
+
+      // bookmarks
+      bookmarkRootNode = root;
+      root.isBookmarked = function(node) {
+        return bookmarks.indexOf(node.id) >= 0
+      };
+      root.onBookmarkAdd = function(node) {
+        bookmarks.push(node.id);
+        bookmarks.sort();
+      };
+      root.onBookmarkRemove = function(node) {
+        var index = bookmarks.indexOf(node.id);
+        bookmarks.splice(index, 1);
+      };
+
+      // search
+      searchRootNode = root;
+
+      $('#tree').html(root.getElement());
+    </script>
 
     <!-- Worker API requires an external file, but loading script later on is
     not possible locally due to security reasons. A workaround is to have the
