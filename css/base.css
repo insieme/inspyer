@@ -7,7 +7,11 @@ body {
 
 .navbar {
   padding: 0px 20px;
-  min-width: 1120px;
+  display: inline-flex;
+}
+
+.navbar-right {
+  margin-left: auto;
 }
 
 .label {
