@@ -18,6 +18,7 @@ $(document).bind('keydown', 'up', function(e) {
     }
 
     select(selectedNode.parent.getChild(childIndex - 1));
+    selectedNode.goto();
 });
 
 $(document).bind('keydown', 'down', function(e) {
@@ -31,6 +32,7 @@ $(document).bind('keydown', 'down', function(e) {
     try {
       var child = selectedNode.parent.getChild(childIndex + 1);
       select(child);
+      selectedNode.goto();
     } catch (e) {}
 });
 
@@ -41,6 +43,7 @@ $(document).bind('keydown', 'left', function(e) {
       return;
     }
     select(selectedNode.parent);
+    selectedNode.goto();
 });
 
 $(document).bind('keydown', 'right', function(e) {
@@ -52,6 +55,7 @@ $(document).bind('keydown', 'right', function(e) {
     try {
       selectedNode.expand();
       select(selectedNode.getChild(0));
+      selectedNode.goto();
     } catch (e) {}
 });
 
@@ -59,6 +63,7 @@ $(document).bind('keydown', 'space', function(e) {
     e.preventDefault();
     if (selectedNode) {
       selectedNode.toggleExpand();
+      selectedNode.goto();
     }
 });
 
@@ -75,7 +80,6 @@ function select(node) {
   selectedNode = node;
   $('.selected').removeClass('selected');
   node.select();
-  node.goto();
 }
 
 function clearSelection() {
