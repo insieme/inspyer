@@ -78,6 +78,14 @@ body {
   margin-right: 8px;
 }
 
+.node > .displaytext > .type {
+  display: inline-block;
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+
 .node > .displaytext > .meta-label {
   margin-left: 20px;
   padding: .2em .6em .3em;
