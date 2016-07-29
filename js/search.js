@@ -46,6 +46,7 @@ $('#search-box-backward').click(function() {
 });
 
 $('#search-box input').on('change', resetSearch);
+$('#search-box-stop').click(stopSearch);
 
 // ------------------------------------------------------------ Results Box
 
@@ -101,6 +102,7 @@ function startSearch() {
     });
     $('#search-box input').addClass('flash');
     $('#search-box button').addClass('flash');
+    $('#search-box-stop').show();
     searchResultsRefresherStart();
   }
 }
@@ -119,6 +121,7 @@ function stopSearch() {
     searchWorker.terminate();
     $('#search-box input').removeClass('flash');
     $('#search-box button').removeClass('flash');
+    $('#search-box-stop').hide();
     searchResultsRefresherStop();
   }
 }
