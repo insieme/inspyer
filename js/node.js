@@ -109,7 +109,8 @@ Node.prototype.bookmarkButton = function () {
     return '';
   }
   var node = this;
-  var bookmark = $('<span class="btn bookmark glyphicon">').click(function () {
+  var bookmark = $('<span class="btn bookmark glyphicon">').click(function (e) {
+      e.stopPropagation();
       if (node.isBookmarked(node)) {
         node.onBookmarkRemove(node);
         bookmark.addClass('glyphicon-star-empty').removeClass('glyphicon-star');
