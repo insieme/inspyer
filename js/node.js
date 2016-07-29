@@ -203,7 +203,7 @@ Node.prototype.removeHl = function () {
 Node.prototype.hlClass = function() {
   // type
   var types = ['Types', 'FunctionType', 'GenericType', 'TupleType',
-               'TypeVariable'];
+               'TypeVariable', 'TagType', 'TagTypeReference'];
   if (types.indexOf(this.kind) >= 0) {
     return 'node-hl-type';
   }
@@ -251,6 +251,14 @@ Node.prototype.displayType = function() {
     } else {
       return this.getChild(0).value;
     }
+  }
+
+  if (this.kind == 'TagType') {
+    return this.getChild(0).getChild(0).value;
+  }
+
+  if (this.kind == 'TagTypeReference') {
+    return '^' + this.getChild(0).value;
   }
 
   if (this.kind == 'FunctionType') {
