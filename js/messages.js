@@ -6,14 +6,14 @@ function addMessage(title, text='', type='info', timeout=2000) {
   console.info('Message: ' + title + '   ' + text);
   var msg = $('<div class="alert alert-dismissible fade">')
   .addClass('alert-' + type)
-  .append($('<strong>').text(title))
+  .append($('<strong>').html(title))
   .click(function() {
       msg.alert('close');
   });
   if (text) {
-    msg.append($('<p>').text(text));
+    msg.append($('<p>').html(text));
   }
-  messagebox.append(msg);
+  messagebox.prepend(msg);
   msg.addClass('in');
   if (timeout) {
     setTimeout(function() {

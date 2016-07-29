@@ -12,12 +12,10 @@ var tree;
 var meta;
 
 $('#input-tree').on('change', function(e) {
-    addMessage('Loading', e.target.files[0].name);
     loadTree(e.target.files[0]);
 });
 
 $('#input-tree-meta').on('change', function(e) {
-    addMessage('Loading Meta', e.target.files[0].name);
     loadMeta(e.target.files[0]);
 });
 
@@ -56,7 +54,11 @@ function loadTree(file) {
     tree = JSON.parse(this.result);
 
     // init root
-    root = new Node(tree['root'], tree);
+    try {
+      root = new Node(tree['root'], tree);
+    } catch(e) {
+      addMessage('Invalid Tree', 'Could not load tree, double check input file', 'danger', 5000);
+    }
 
     // init label / body from meta
     root.onDisplayLabel = function(node) {
@@ -107,6 +109,13 @@ function loadTree(file) {
     if ($('#input-tree-meta')[0].files[0]) {
       loadMeta($('#input-tree-meta')[0].files[0]);
     }
+
+    addMessage('Loaded Tree', '<span class="glyphicon glyphicon-file"></span> ' + file.name);
+
+    // size warning
+    if (Object.keys(tree).length > 5000) {
+      addMessage('Big Tree', 'The loaded tree contains more than 5000 (shared) nodes, search be slow or crash', 'warning', 6000);
+    }
   }
   console.info('Loading: ' + file.name);
   reader.readAsText(file);
@@ -143,6 +152,8 @@ function loadMeta(file) {
 
     // refresh
     root.refreshElement();
+
+    addMessage('Loaded Meta', '<span class="glyphicon glyphicon-file"></span> ' + file.name);
   }
   console.info('Loading Meta: ' + file.name);
   reader.readAsText(file);

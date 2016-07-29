@@ -157,7 +157,15 @@
         console.info('Starting search for: ' + e.data.needle);
 
         forAllNodes(e.data.tree, function(addr, node) {
-            if (node['Value'] && node['Value'].match(needle)) {
+            var match = false;
+
+            // check kind
+            match = match || node['Kind'].match(needle);
+
+            // check value
+            match = match || (node['Value'] && node['Value'].match(needle));
+
+            if (match) {
               self.postMessage({finished: false, addr: addr});
             }
         });

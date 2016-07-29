@@ -122,6 +122,10 @@ body {
   z-index: 1040;
 }
 
+#message-box > div {
+  cursor: pointer;
+}
+
 /* flashing animation */
 .flash {
   -moz-animation: flash 1s ease-out;

@@ -31,6 +31,12 @@ Node.prototype.walk = function(path, fun, onLast=false) {
 
 Node.prototype.loadChild = function(index) {
   for (var i = this.children.length; i <= index; i++) {
+
+    // check for child
+    if (!this.tree[this.inputNodeChildren[i]]) {
+      throw 'Could not reach ' + this.id + '-' + i;
+    }
+
     this.children[i] = new Node(this.inputNodeChildren[i], this.tree, this.id + '-' + i);
 
     // attach label and body callbacks

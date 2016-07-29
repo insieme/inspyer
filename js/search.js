@@ -10,6 +10,43 @@ var searchIndex = -1;
 var searchWorker = false;
 var searchResultsRefresher;
 
+// ------------------------------------------------------------ Search controls
+
+$('#search-box').submit(function(e) {
+    e.preventDefault();
+    if (!searchRootNode) {
+      addMessage('No Tree Loaded', 'Click the load button to load a tree.', 'danger', 3000);
+      return
+    }
+    if (!searchWorker) {
+      startSearch();
+    } else if (searchResults.length > 0) {
+      searchIndex = (searchIndex + 1) % searchResults.length;
+      if (!searchResultsRefresher) {
+        updatesearchResult();
+      }
+      gotoNode(searchRootNode, searchResults[searchIndex]);
+    }
+});
+
+$('#search-box-backward').click(function() {
+    if (!searchRootNode) {
+      addMessage('No Tree Loaded', 'Click the load button to load a tree.', 'danger', 3000);
+      return
+    }
+    if (!searchWorker) {
+      startSearch();
+    } else if (searchWorker && searchResults.length > 0) {
+      searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
+      if (!searchResultsRefresher) {
+        updatesearchResult();
+      }
+      gotoNode(searchRootNode, searchResults[searchIndex]);
+    }
+});
+
+$('#search-box input').on('change', resetSearch);
+
 // ------------------------------------------------------------ Results Box
 
 function updatesearchResult() {
@@ -85,32 +122,3 @@ function stopSearch() {
     searchResultsRefresherStop();
   }
 }
-
-// ------------------------------------------------------------ Search controls
-
-$('#search-box').submit(function(e) {
-    e.preventDefault();
-    if (!searchWorker) {
-      startSearch();
-    } else if (searchResults.length > 0) {
-      searchIndex = (searchIndex + 1) % searchResults.length;
-      if (!searchResultsRefresher) {
-        updatesearchResult();
-      }
-      gotoNode(searchRootNode, searchResults[searchIndex]);
-    }
-});
-
-$('#search-box-backward').click(function() {
-    if (!searchWorker) {
-      startSearch();
-    } else if (searchWorker && searchResults.length > 0) {
-      searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
-      if (!searchResultsRefresher) {
-        updatesearchResult();
-      }
-      gotoNode(searchRootNode, searchResults[searchIndex]);
-    }
-});
-
-$('#search-box input').on('change', resetSearch);
