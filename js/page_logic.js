@@ -42,6 +42,8 @@ $('#input-tree-reload-hard').click(function() {
 
     // clear
     resetSearch();
+    bookmarks = [];
+    bookmarkIndex = 0;
 
     // reload tree
     root.destroyElement();
@@ -122,6 +124,9 @@ function loadTree(file) {
     if (Object.keys(tree).length > 5000) {
       addMessage('Big Tree', 'The loaded tree contains more than 5000 (shared) nodes, search be slow or crash', 'warning', 6000);
     }
+
+    // scroll to top
+    $('html, body').stop().animate({ scrollTop: 0 }, 300);
   }
   console.info('Loading: ' + file.name);
   reader.readAsText(file);

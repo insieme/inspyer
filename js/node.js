@@ -92,11 +92,11 @@ Node.prototype.refreshElement = function() {
   }
 
   // bookmark button
-  this.element.find('> .displaytext > .bookmark').replaceWith(this.bookmarkButton());
+  this.element.find('> .node-controls > .node-controls-bookmark').replaceWith(this.bookmarkButton());
 
   // meta information
-  this.element.find('> .displaytext > .meta-label').html(this.onDisplayLabel(this));
-  this.element.find('> .body > .text').html(this.onDisplayBody(this));
+  this.element.find('> .node-header > .node-header-meta').html(this.onDisplayLabel(this));
+  this.element.find('> .node-body > .node-body-text').html(this.onDisplayBody(this));
 
   // propagate
   for (var i in this.children) {
@@ -109,7 +109,7 @@ Node.prototype.bookmarkButton = function () {
     return '';
   }
   var node = this;
-  var bookmark = $('<span class="btn bookmark glyphicon">').click(function (e) {
+  var bookmark = $('<span class="node-controls-bookmark btn glyphicon">').click(function (e) {
       e.stopPropagation();
       if (node.isBookmarked(node)) {
         node.onBookmarkRemove(node);
@@ -130,23 +130,23 @@ Node.prototype.bookmarkButton = function () {
 Node.prototype.buildElement = function() {
   var node = this;
   var e = $('<div class="node">').attr('id', this.id).addClass(this.hlClass()).append(
-    $('<div class="controls">').append(
-      $('<a data-toggle="collapse">').attr('data-target', '#' + this.id + '-body').text('[+]')
+    $('<div class="node-controls">').append(
+      $('<span class="node-controls-expand">').text('[+]'),
+      this.bookmarkButton()
     ),
 
-    $('<div class="displaytext">').append(
-      this.bookmarkButton(),
-      $('<span class="path">').text('[ ' + this.id + ' ]'),
-      $('<span class="kind">').text(this.kind),
-      $('<span class="type">').html('<span class="label label-info">' + this.displayType() + '</span>'),
-      $('<span class="value">').html('<span class="label label-default">' + String(this.displayValue()) + '</span>'),
-      $('<span class="variable">').html('<span class="label label-danger">' + String(this.displayVariable()) + '</span>'),
-      $('<span class="meta-label">').html(this.onDisplayLabel(this))
+    $('<div class="node-header">').append(
+      $('<span class="node-header-path">').text('[ ' + this.id + ' ]'),
+      $('<span class="node-header-kind">').text(this.kind),
+      $('<span class="node-header-type">').html(this.displayType()),
+      $('<span class="node-header-value">').html(this.displayValue()),
+      $('<span class="node-header-variable">').html(this.displayVariable()),
+      $('<span class="node-header-meta">').html(this.onDisplayLabel(this))
     ),
 
-    $('<div class="body collapse">').attr('id', this.id + '-body').append(
-      $('<div class="text">').html(this.onDisplayBody(this)),
-      $('<div class="children">')
+    $('<div class="node-body collapse">').attr('id', this.id + '-body').append(
+      $('<div class="node-body-text">').html(this.onDisplayBody(this)),
+      $('<div class="node-body-children">')
     ).on('show.bs.collapse', function (e) {
         e.stopPropagation();
         node.onExpand();
@@ -178,8 +178,8 @@ Node.prototype.expand = function() {
 }
 
 Node.prototype.onExpand = function() {
-  this.getElement().find('> .controls > a').text('[-]');
-  this.getElement().find('> .body > .children').append(
+  this.getElement().find('> .node-controls > .node-controls-expand').text('[-]');
+  this.getElement().find('> .node-body > .node-body-children').append(
     this.getChildren().map(function(c) { return c.getElement(); })
   );
 
@@ -194,7 +194,7 @@ Node.prototype.collapse = function () {
 }
 
 Node.prototype.onCollapse = function() {
-  this.getElement().find('> .controls > a').text('[+]');
+  this.getElement().find('> .node-controls > .node-controls-expand').text('[+]');
 }
 
 Node.prototype.onCollapsed = function() {
@@ -310,7 +310,7 @@ Node.prototype.displayValue = function() {
     }
   }
 
-  return value;
+  return String(value);
 }
 
 Node.prototype.displayVariable = function() {
@@ -336,5 +336,5 @@ Node.prototype.displayVariable = function() {
     }).join(' , ') + ' ] ';
   }
 
-  return variable;
+  return String(variable);
 }

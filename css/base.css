@@ -5,6 +5,8 @@ body {
   margin-bottom: 800px;
 }
 
+/* ------------------------------------------------------------ Navbar */
+
 .navbar {
   padding: 0px 20px;
   display: inline-flex;
@@ -12,10 +14,6 @@ body {
 
 .navbar-right {
   margin-left: auto;
-}
-
-.label {
-  font-weight: lighter;
 }
 
 #filename-box {
@@ -32,8 +30,30 @@ body {
   padding: 5px 10px;
 }
 
+/* ------------------------------------------------------------ Body */
+
 #tree {
   padding-right: 6px;
+}
+
+/* ------------------------------------------------------------ Messages */
+
+#message-box {
+  position: fixed;
+  width: 350px;
+  top: 100px;
+  right: 5px;
+  z-index: 1040;
+}
+
+#message-box > div {
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------ Nodes */
+
+.label {
+  font-weight: lighter;
 }
 
 .node {
@@ -54,69 +74,6 @@ body {
   padding: 0px;
 }
 
-.node > .controls {
-  display: inline-block;
-  width: 50px;
-}
-
-.node > .controls > a {
-  font-family: monospace;
-  font-size: 12pt;
-}
-
-.node > .controls > a:active,
-.node > .controls > a:focus,
-.node > .controls > a:hover,
-.node > .controls > a:visited {
-  text-decoration: none;
-}
-
-.node > .displaytext {
-  display: inline-block;
-}
-
-.node > .displaytext > .bookmark {
-  padding: 0px 5px;
-}
-
-.node > .displaytext > .kind {
-  font-size: 12pt;
-  margin-right: 12px;
-}
-
-.node > .displaytext > .path {
-  font-family: monospace;
-  font-size: 8pt;
-  margin-right: 8px;
-}
-
-.node > .displaytext > .type {
-  display: inline-block;
-  max-width: 500px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #fff;
-}
-
-.node > .displaytext > .meta-label {
-  margin-left: 20px;
-  padding: .2em .6em .3em;
-  font-size: 75%;
-  line-height: 1;
-  background: #eee;
-  border-radius: .25em;
-}
-
-.node > .displaytext > .meta-label:empty {
-  display: none;
-}
-
-.node > .body > .text {
-  margin-left: 10px;
-  padding-left: 2px;
-  border-left: solid thin lightblue;
-}
-
 .node-hl {
   background-color: #fcf8e3;
 }
@@ -133,20 +90,85 @@ body {
   background-color: #f2dede;
 }
 
-/* message box */
-#message-box {
-  position: fixed;
-  width: 350px;
-  top: 100px;
-  right: 5px;
-  z-index: 1040;
+.node-controls {
+  display: inline-block;
 }
 
-#message-box > div {
-  cursor: pointer;
+.node-controls-expand {
+  font-family: monospace;
+  font-size: 12pt;
 }
 
-/* flashing animation */
+.node-controls-bookmark {
+  padding: 0px 12px;
+}
+
+.node-header {
+  display: inline-block;
+}
+
+.node-header-path {
+  font-family: monospace;
+  font-size: 8pt;
+  margin-right: 8px;
+}
+
+.node-header-kind {
+  font-size: 12pt;
+  margin-right: 12px;
+}
+
+.node-header-type,
+.node-header-value,
+.node-header-variable,
+.node-header-meta {
+  display: inline-block;
+  color: #fff;
+  font-size: 10px;
+  padding: 0px 4px;
+  margin: 0px 10px -2px;
+  border-radius: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-header-type:empty,
+.node-header-value:empty,
+.node-header-variable:empty,
+.node-header-meta:empty {
+  display: none;
+}
+
+.node-header-type {
+  background-color: #5bc0de;
+  max-width: 500px;
+}
+
+.node-header-value {
+  background-color: #777;
+}
+
+.node-header-variable {
+  background-color: #d9534f;
+}
+
+.node-header-meta {
+  color: #333;
+  background: #eee;
+}
+
+.node-body-text {
+  margin: 5px 5px 5px 10px;
+  padding-left: 5px;
+  border-left: solid thin lightblue;
+}
+
+.node-body-text:empty {
+  display: none;
+}
+
+/* ------------------------------------------------------------ Animations */
 .flash {
   -moz-animation: flash 1s ease-out;
   -moz-animation-iteration-count: infinite;
