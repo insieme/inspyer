@@ -1,9 +1,10 @@
 'use strict'
 
-function Node(ref, tree, id='0') {
-  this.id = id;
+function Node(ref, tree, id='0', parent=undefined) {
   this.ref = ref;
   this.tree = tree;
+  this.id = id;
+  this.parent = parent;
 
   this.kind = tree[ref]['Kind'];
   this.value = tree[ref]['Value'];
@@ -37,7 +38,7 @@ Node.prototype.loadChild = function(index) {
       throw 'Could not reach ' + this.id + '-' + i;
     }
 
-    this.children[i] = new Node(this.inputNodeChildren[i], this.tree, this.id + '-' + i);
+    this.children[i] = new Node(this.inputNodeChildren[i], this.tree, this.id + '-' + i, this);
 
     // attach label and body callbacks
     this.children[i].onDisplayLabel = this.onDisplayLabel;
@@ -47,6 +48,9 @@ Node.prototype.loadChild = function(index) {
     this.children[i].isBookmarked = this.isBookmarked;
     this.children[i].onBookmarkAdd = this.onBookmarkAdd;
     this.children[i].onBookmarkRemove = this.onBookmarkRemove;
+
+    // attach click callback
+    this.children[i].onClick = this.onClick;
   }
 }
 
@@ -124,9 +128,9 @@ Node.prototype.bookmarkButton = function () {
 
 Node.prototype.buildElement = function() {
   var node = this;
-  return $('<div class="node">').attr('id', this.id).addClass(this.hlClass()).append(
+  var e = $('<div class="node">').attr('id', this.id).addClass(this.hlClass()).append(
     $('<div class="controls">').append(
-      $('<a role="button" data-toggle="collapse">').attr('data-target', '#' + this.id + '-body').text('[+]')
+      $('<a data-toggle="collapse">').attr('data-target', '#' + this.id + '-body').text('[+]')
     ),
 
     $('<div class="displaytext">').append(
@@ -153,6 +157,19 @@ Node.prototype.buildElement = function() {
         node.onCollapsed();
     })
   );
+
+  if (this.onClick) {
+    e.click(function(e) {
+        e.stopPropagation();
+        node.onClick(node);
+    });
+  }
+
+  return e;
+}
+
+Node.prototype.toggleExpand = function() {
+  this.getElement().find('> .collapse').collapse('toggle');
 }
 
 Node.prototype.expand = function() {
@@ -185,7 +202,7 @@ Node.prototype.onCollapsed = function() {
 
 Node.prototype.goto = function() {
   // scroll to target
-  $('html, body').animate({
+  $('html, body').stop().animate({
       scrollTop: this.getElement().offset().top - 200
   }, 400);
   return this;
@@ -225,6 +242,10 @@ Node.prototype.hlClass = function() {
   }
 
   return '';
+}
+
+Node.prototype.select = function() {
+  this.getElement().addClass('selected');
 }
 
 Node.prototype.displayType = function() {

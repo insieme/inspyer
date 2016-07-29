@@ -16,9 +16,10 @@ function gotoNode(root, path) {
   $('.node .flash').removeClass('flash');
 
   try {
-    root.walk(path, function(node) {
+    var target = root.walk(path, function(node) {
         node.expand();
     }).goto().flash();
+    select(target);
   } catch(e) {
     if (e.stack) {
       console.log(e.stack);

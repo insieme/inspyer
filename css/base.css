@@ -40,6 +40,18 @@ body {
   margin: 2px 0px 2px 6px;
   border: solid thin lightblue;
   background-color: #fdfdfd;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.node:hover {
+  border: solid 3px lightblue;
+  padding: 0px;
+}
+
+.node.selected {
+  border: solid 3px lightslategrey;
+  padding: 0px;
 }
 
 .node > .controls {

@@ -6,6 +6,7 @@
 // - bookmark
 // - search
 // - message
+// - select
 
 var root;
 var tree;
@@ -58,6 +59,7 @@ function loadTree(file) {
       root = new Node(tree['root'], tree);
     } catch(e) {
       addMessage('Invalid Tree', 'Could not load tree, double check input file', 'danger', 5000);
+      return;
     }
 
     // init label / body from meta
@@ -94,7 +96,11 @@ function loadTree(file) {
     };
 
     // init search
+    root.onClick = selectClick;
     searchRootNode = root;
+
+    // init select
+    select(root);
 
     // enable meta and reload
     $('#input-tree-meta').prop('disabled', false);
