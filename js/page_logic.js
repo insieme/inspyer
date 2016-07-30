@@ -10,14 +10,18 @@
 
 var root;
 var tree;
+var treeFile;
 var meta;
+var metaFile;
 
 $('#input-tree').on('change', function(e) {
-    loadTree(e.target.files[0]);
+    treeFile = e.target.files[0];
+    loadTree();
 });
 
 $('#input-tree-meta').on('change', function(e) {
-    loadMeta(e.target.files[0]);
+    metaFile = e.target.files[0];
+    loadMeta();
 });
 
 $('#input-tree-reload').click(function() {
@@ -31,7 +35,7 @@ $('#input-tree-reload').click(function() {
 
     // reload tree
     root.destroyElement();
-    loadTree($('#input-tree')[0].files[0]);
+    loadTree();
 });
 
 $('#input-tree-reload-hard').click(function() {
@@ -47,11 +51,11 @@ $('#input-tree-reload-hard').click(function() {
 
     // reload tree
     root.destroyElement();
-    loadTree($('#input-tree')[0].files[0]);
+    loadTree();
 });
 
-function loadTree(file) {
-  setTitle(file.name);
+function loadTree() {
+  setTitle(treeFile.name);
   var reader = new FileReader();
   reader.onload = function() {
     tree = JSON.parse(this.result);
@@ -114,11 +118,11 @@ function loadTree(file) {
     $('#tree').html(root.getElement());
 
     // reload meta
-    if ($('#input-tree-meta')[0].files[0]) {
-      loadMeta($('#input-tree-meta')[0].files[0]);
+    if (metaFile) {
+      loadMeta();
     }
 
-    addMessage('Loaded Tree', '<span class="glyphicon glyphicon-file"></span> ' + file.name);
+    addMessage('Loaded Tree', '<span class="glyphicon glyphicon-file"></span> ' + treeFile.name);
 
     // size warning
     if (Object.keys(tree).length > 5000) {
@@ -128,11 +132,11 @@ function loadTree(file) {
     // scroll to top
     $('html, body').stop().animate({ scrollTop: 0 }, 300);
   }
-  console.info('Loading: ' + file.name);
-  reader.readAsText(file);
+  console.info('Loading: ' + treeFile.name);
+  reader.readAsText(treeFile);
 }
 
-function loadMeta(file) {
+function loadMeta() {
   var reader = new FileReader();
   reader.onload = function() {
     meta = JSON.parse(this.result);
@@ -164,10 +168,10 @@ function loadMeta(file) {
     // refresh
     root.refreshElement();
 
-    addMessage('Loaded Meta', '<span class="glyphicon glyphicon-file"></span> ' + file.name);
+    addMessage('Loaded Meta', '<span class="glyphicon glyphicon-file"></span> ' + metaFile.name);
   }
-  console.info('Loading Meta: ' + file.name);
-  reader.readAsText(file);
+  console.info('Loading Meta: ' + metaFile.name);
+  reader.readAsText(metaFile);
 }
 
 function setTitle(title) {
