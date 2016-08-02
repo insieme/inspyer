@@ -141,7 +141,8 @@ Node.prototype.buildElement = function() {
       $('<span class="node-header-type">').html(this.displayType()),
       $('<span class="node-header-value">').html(this.displayValue()),
       $('<span class="node-header-variable">').html(this.displayVariable()),
-      $('<span class="node-header-meta">').html(this.onDisplayLabel(this))
+      $('<span class="node-header-meta">').html(this.onDisplayLabel(this)),
+      $('<div class="node-header-ref">').text(this.ref)
     ),
 
     $('<div class="node-body collapse">').attr('id', this.id + '-body').append(

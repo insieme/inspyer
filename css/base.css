@@ -73,6 +73,7 @@ body {
   background-color: #fdfdfd;
   padding: 2px;
   cursor: pointer;
+  position: relative;
 }
 
 .node:hover {
@@ -116,6 +117,7 @@ body {
 
 .node-header {
   display: inline-block;
+  width: 90%;
 }
 
 .node-header-path {
@@ -132,7 +134,8 @@ body {
 .node-header-type,
 .node-header-value,
 .node-header-variable,
-.node-header-meta {
+.node-header-meta,
+.node-header-ref {
   display: inline-block;
   color: #fff;
   font-size: 10px;
@@ -147,7 +150,8 @@ body {
 .node-header-type:empty,
 .node-header-value:empty,
 .node-header-variable:empty,
-.node-header-meta:empty {
+.node-header-meta:empty,
+.node-header-ref:empty {
   display: none;
 }
 
@@ -167,6 +171,14 @@ body {
 .node-header-meta {
   color: #333;
   background: #eee;
+}
+
+.node-header-ref {
+  color: #333;
+  background: #eee;
+  position: absolute;
+  right: 0px;
+  top: 5px;
 }
 
 .node-body-text {
