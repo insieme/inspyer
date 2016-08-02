@@ -172,15 +172,17 @@
     browser from executing the code right away -->
     <script id="search-worker" type="javascript/worker">
 
-      function forAllNodes(tree, f, node=undefined, address=[]) {
-        if (!node) {
-          node = tree[tree['root']];
+      function forAllNodes(tree, f, ref=undefined, address=[]) {
+        if (!ref) {
+          ref = tree['root'];
         }
 
-        f(address, node);
+        var node = tree[ref];
 
-        for (var i in node['Children']) {
-          forAllNodes(tree, f, tree[node['Children'][i]], address.concat([i]));
+        f(address, node, ref);
+
+        for (var i = 0; i < node['Children'].length; i++) {
+          forAllNodes(tree, f, node['Children'][i], address.concat([i]));
         }
       }
 
@@ -188,8 +190,11 @@
         var needle = new RegExp(e.data.needle, 'i');
         console.info('Starting search for: ' + e.data.needle);
 
-        forAllNodes(e.data.tree, function(addr, node) {
+        forAllNodes(e.data.tree, function(addr, node, ref) {
             var match = false;
+
+            // check ref
+            match = match || ref.match(needle);
 
             // check kind
             match = match || node['Kind'].match(needle);

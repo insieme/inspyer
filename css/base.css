@@ -179,6 +179,7 @@ body {
   position: absolute;
   right: 0px;
   top: 5px;
+  font-family: monospace;
 }
 
 .node-body-text {
