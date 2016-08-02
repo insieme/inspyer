@@ -163,6 +163,12 @@ Node.prototype.buildElement = function() {
   if (this.onClick) {
     e.click(function(e) {
         e.stopPropagation();
+
+        // do not trigger on selection
+        if (getSelection().toString()) {
+          return;
+        }
+
         node.onClick(node);
     });
   }
