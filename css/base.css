@@ -109,6 +109,9 @@ body {
 .node-controls-expand {
   font-family: monospace;
   font-size: 12pt;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .node-controls-bookmark {
@@ -117,7 +120,8 @@ body {
 
 .node-header {
   display: inline-block;
-  width: 90%;
+  width: 85%;
+  margin-right: 100px;
 }
 
 .node-header-path {
