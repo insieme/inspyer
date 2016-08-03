@@ -178,6 +178,10 @@
 
         f(address, node, ref);
 
+        if (!node['Children']) {
+          return;
+        }
+
         for (var i = 0; i < node['Children'].length; i++) {
           forAllNodes(tree, f, node['Children'][i], address.concat([i]));
         }

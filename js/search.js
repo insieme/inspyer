@@ -82,6 +82,7 @@ function startSearch() {
         $('#search-box input').removeClass('flash');
         $('#search-box button').removeClass('flash');
         searchResultsRefresherStop();
+        updatesearchResult();
       } else {
         searchResults.push(e.data.addr);
         if (searchIndex < 0) {
