@@ -68,12 +68,9 @@ $(document).bind('keydown', 'space', function(e) {
 });
 
 function selectClick(node) {
-  if (node == selectedNode) {
-    node.toggleExpand();
-  } else {
-    select(node);
-  }
-  clearSelection();
+  node.toggleExpand();
+  select(node);
+  console.info(window.getSelection().anchorNode.parentNode);
 }
 
 function select(node) {
