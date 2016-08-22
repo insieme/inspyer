@@ -272,7 +272,10 @@ Node.prototype.displayType = function() {
     });
     // check for ptr types
     if(children.length == 2 && childStrings[1].trim() == 'int&lt;8&gt;' && childStrings[0].startsWith("ref&lt;array&lt;")) {
-        return 'ptr&lt;' + children[0].getChild(2).getChild(0).getChild(2).getChild(0).displayType() + ' &gt; ';
+        var refT = children[0].getChild(2);
+        var cT = refT.getChild(1).displayType();
+        var vT = refT.getChild(2).displayType();
+        return 'ptr&lt;' + refT.getChild(0).getChild(2).getChild(0).displayType() + ', ' + cT + ' ,' + vT + ' &gt; ';
     }
     return ' ( ' + childStrings.join(', ') + ' ) ';
   }
