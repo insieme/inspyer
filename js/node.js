@@ -266,9 +266,15 @@ Node.prototype.displayType = function() {
   }
 
   if (this.kind == 'TupleType') {
-    return ' ( ' + this.getChildren().map(function(c) {
+    var children = this.getChildren();
+    var childStrings = children.map(function(c) {
         return c.displayType();
-    }).join(' ') + ' ) ';
+    });
+    // check for ptr types
+    if(children.length == 2 && childStrings[1].trim() == 'int&lt;8&gt;' && childStrings[0].startsWith("ref&lt;array&lt;")) {
+        return 'ptr&lt;' + children[0].getChild(2).getChild(0).getChild(2).getChild(0).displayType() + ' &gt; ';
+    }
+    return ' ( ' + childStrings.join(', ') + ' ) ';
   }
 
   if (this.kind == 'Types') {
@@ -282,7 +288,7 @@ Node.prototype.displayType = function() {
         return c.displayType();
     });
     if (types.length > 0) {
-      return this.getChild(0).value + '&lt;' + types.join(' , ') + '&gt;';
+      return this.getChild(0).value + '&lt;' + types.join(', ') + '&gt;';
     } else {
       return this.getChild(0).value;
     }
