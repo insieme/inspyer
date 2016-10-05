@@ -36,5 +36,5 @@ $('#goto-box').submit(function(e) {
       addMessage('No Tree Loaded', 'Click the load button to load a tree.', 'danger', 3000);
       return
     }
-    gotoNodeById(gotoRootNode, $('#goto-box input').val());
+    gotoNodeById(gotoRootNode, $('#goto-box input').val().trim());
 });
