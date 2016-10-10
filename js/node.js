@@ -320,10 +320,26 @@ Node.prototype.displayValue = function() {
     value = this.getChild(1).value;
   }
 
-  if (this.kind == 'CallExpr' || this.kind == 'InitExpr') {
-    if (this.getChild(1).getChild(1).value) {
+  if (this.kind == 'InitExpr' && this.getChild(1).getChild(1).value) {
+    value = this.getChild(1).getChild(1).value;
+  }
+
+  if (this.kind == 'CallExpr') {
+    if (this.getChild(1).kind == 'Literal') {
       value = this.getChild(1).getChild(1).value;
     }
+
+    if (this.getChild(1).kind == 'LambdaExpr') {
+      value = this.getChild(1).getChild(1).getChild(1).value;
+    }
+  }
+
+  if (this.kind == 'LambdaExpr') {
+    value = this.getChild(1).getChild(1).value;
+  }
+
+  if (this.kind == 'LambdaReference') {
+    value = this.getChild(1).value;
   }
 
   return String(value);
