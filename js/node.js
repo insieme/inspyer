@@ -314,59 +314,34 @@ Node.prototype.displayType = function() {
 }
 
 Node.prototype.displayValue = function() {
-  var value = this.value || '';
-
-  if (this.kind == 'Literal') {
-    value = this.getChild(1).value;
+  if (this.value) {
+    return this.value;
   }
 
-  if (this.kind == 'InitExpr' && this.getChild(1).getChild(1).value) {
-    value = this.getChild(1).getChild(1).value;
+  var copySecondChild = ['Literal', 'InitExpr', 'CallExpr', 'LambdaExpr',
+                         'LambdaReference', 'Declaration'];
+
+  if (copySecondChild.indexOf(this.kind) >= 0) {
+    return this.getChild(1).displayValue();
   }
 
-  if (this.kind == 'CallExpr') {
-    if (this.getChild(1).kind == 'Literal') {
-      value = this.getChild(1).getChild(1).value;
-    }
-
-    if (this.getChild(1).kind == 'LambdaExpr') {
-      value = this.getChild(1).getChild(1).getChild(1).value;
-    }
-  }
-
-  if (this.kind == 'LambdaExpr') {
-    value = this.getChild(1).getChild(1).value;
-  }
-
-  if (this.kind == 'LambdaReference') {
-    value = this.getChild(1).value;
-  }
-
-  return String(value);
+  return '';
 }
 
 Node.prototype.displayVariable = function() {
-  var variable = '';
-
   if (this.kind == 'Variable') {
-    variable = this.getChild(1).value;
+    return this.getChild(1).value;
   }
 
-  if (this.kind == 'Declaration') {
-    if (this.getChild(1).getChild(1).value) {
-      variable = this.getChild(1).getChild(1).value;
-    }
-  }
-
-  if (this.kind == 'DeclarationStmt') {
-    variable = this.getChild(1).getChild(1).value;
+  if (this.kind == 'Declaration' || this.kind == 'DeclarationStmt') {
+    return this.getChild(1).displayVariable();
   }
 
   if (this.kind == 'Parameters') {
-    variable = ' [ ' + this.getChildren().map(function(c) {
+    return ' [ ' + this.getChildren().map(function(c) {
         return c.displayVariable();
     }).join(' , ') + ' ] ';
   }
 
-  return String(variable);
+  return '';
 }
