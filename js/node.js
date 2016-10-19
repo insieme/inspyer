@@ -160,6 +160,13 @@ Node.prototype.buildElement = function() {
     })
   );
 
+  // view option hide path
+  if (showPath) {
+    $(e).find('> .node-header > .node-header-path').show();
+  } else {
+    $(e).find('> .node-header > .node-header-path').hide();
+  }
+
   if (this.onClick) {
     e.click(function(e) {
         e.stopPropagation();
