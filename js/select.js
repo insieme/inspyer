@@ -70,7 +70,6 @@ $(document).bind('keydown', 'space', function(e) {
 function selectClick(node) {
   node.toggleExpand();
   select(node);
-  console.info(window.getSelection().anchorNode.parentNode);
 }
 
 function select(node) {
