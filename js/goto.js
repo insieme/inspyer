@@ -6,13 +6,34 @@
 var gotoRootNode;
 
 function gotoNodeById(id) {
-  gotoNode(id.split('-').slice(1));
+  var target = "#node-" + id;
+  if (window.location.hash == target) {
+    scrollToHash();
+  } else {
+    window.location.hash = target;
+  }
 }
 
 function gotoNode(path) {
-  $('#goto-box input').val(
-    '0' + path.map(function(i) { return '-' + i; }).join('')
-  );
+  gotoNodeById('0' + path.map(function(i) { return '-' + i; }).join(''));
+}
+
+$('#goto-box').submit(function(e) {
+    e.preventDefault();
+    if (!gotoRootNode) {
+      addMessage('No Tree Loaded', 'Click the load button to load a tree.', 'danger', 3000);
+      return
+    }
+    gotoNodeById($('#goto-box input').val().trim());
+});
+
+function scrollToHash() {
+  if (!gotoRootNode) return;
+
+  var id = window.location.hash.slice(6);
+  var path = id.split('-').slice(1);
+
+  $('#goto-box input').val(id);
   $('.node .flash').removeClass('flash');
 
   try {
@@ -30,11 +51,4 @@ function gotoNode(path) {
   }
 }
 
-$('#goto-box').submit(function(e) {
-    e.preventDefault();
-    if (!gotoRootNode) {
-      addMessage('No Tree Loaded', 'Click the load button to load a tree.', 'danger', 3000);
-      return
-    }
-    gotoNodeById($('#goto-box input').val().trim());
-});
+window.onhashchange = scrollToHash;
