@@ -88,7 +88,6 @@ function loadTree() {
     gotoRootNode = root;
 
     // init bookmark
-    bookmarkRootNode = root;
     root.isBookmarked = function(node) {
       return bookmarks.indexOf(node.id) >= 0
     };
@@ -150,7 +149,7 @@ function loadMeta() {
 
     // jump to first bookmark
     if (bookmarks.length > 0) {
-      gotoNodeById(root, bookmarks[0]);
+      gotoNodeById(bookmarks[0]);
     }
 
     // expands

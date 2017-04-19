@@ -5,18 +5,18 @@
 
 var gotoRootNode;
 
-function gotoNodeById(root, id) {
-  gotoNode(root, id.split('-').slice(1));
+function gotoNodeById(id) {
+  gotoNode(id.split('-').slice(1));
 }
 
-function gotoNode(root, path) {
+function gotoNode(path) {
   $('#goto-box input').val(
     '0' + path.map(function(i) { return '-' + i; }).join('')
   );
   $('.node .flash').removeClass('flash');
 
   try {
-    var target = root.walk(path, function(node) {
+    var target = gotoRootNode.walk(path, function(node) {
         node.expand();
     }).goto().flash();
     select(target);
@@ -36,5 +36,5 @@ $('#goto-box').submit(function(e) {
       addMessage('No Tree Loaded', 'Click the load button to load a tree.', 'danger', 3000);
       return
     }
-    gotoNodeById(gotoRootNode, $('#goto-box input').val().trim());
+    gotoNodeById($('#goto-box input').val().trim());
 });
