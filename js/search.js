@@ -25,7 +25,7 @@ $('#search-box').submit(function(e) {
       if (!searchResultsRefresher) {
         updatesearchResult();
       }
-      gotoNode(searchRootNode, searchResults[searchIndex]);
+      gotoNode(searchResults[searchIndex]);
     }
 });
 
@@ -41,7 +41,7 @@ $('#search-box-backward').click(function() {
       if (!searchResultsRefresher) {
         updatesearchResult();
       }
-      gotoNode(searchRootNode, searchResults[searchIndex]);
+      gotoNode(searchResults[searchIndex]);
     }
 });
 
@@ -87,7 +87,7 @@ function startSearch() {
         searchResults.push(e.data.addr);
         if (searchIndex < 0) {
           searchIndex = 0;
-          gotoNode(searchRootNode, searchResults[0]);
+          gotoNode(searchResults[0]);
         }
       }
     }
