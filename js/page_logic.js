@@ -118,7 +118,7 @@ function loadTree() {
 
     // reload meta
     if (metaFile) {
-      loadMeta();
+      loadMeta(true);
     }
 
     addMessage('Loaded Tree', '<span class="glyphicon glyphicon-file"></span> ' + treeFile.name);
@@ -128,14 +128,18 @@ function loadTree() {
       addMessage('Big Tree', 'The loaded tree contains more than 5000 (shared) nodes, search be slow or crash', 'warning', 6000);
     }
 
-    // scroll to top
-    $('html, body').stop().animate({ scrollTop: 0 }, 300);
+    // scroll somewhere
+    if (window.location.hash) {
+      scrollToHash();
+    } else {
+      $('html, body').stop().animate({ scrollTop: 0 }, 300);
+    }
   }
   console.info('Loading: ' + treeFile.name);
   reader.readAsText(treeFile);
 }
 
-function loadMeta() {
+function loadMeta(noScroll) {
   var reader = new FileReader();
   reader.onload = function() {
     meta = JSON.parse(this.result);
@@ -148,7 +152,7 @@ function loadMeta() {
     }
 
     // jump to first bookmark
-    if (bookmarks.length > 0) {
+    if (bookmarks.length > 0 && !noScroll) {
       gotoNodeById(bookmarks[0]);
     }
 
