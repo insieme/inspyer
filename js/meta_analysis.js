@@ -72,16 +72,25 @@ function constructMetaBodiesHtml(node, bodies, meta) {
   }
 
   function display(group) {
-    var els = $().add(document.createTextNode(group.summary));
+    var $summary = $('<span>').html(linkNodeAddresses(group.summary));
+
     if (group.details) {
-      var a;
-      els = els.add(a = $('<a>').text('…').addClass('analysismeta-ellipsis'));
-      a.on('click', function (e) {
-        e.stopPropagation();
-        a.parent().text(g.details);
-      });
+      $summary.append(
+        $('<a>')
+          .addClass('analysismeta-ellipsis')
+          .text('…')
+          .click(function(e) {
+            e.stopPropagation();
+            $(this).parent().html(linkNodeAddresses(g.details))
+          })
+      )
     }
-    return els;
+
+    return $summary;
+  }
+
+  function linkNodeAddresses(text) {
+    return text.replace(/0-\d+(-\d+)*/, ' <a href="#node-$&">$&</a>');
   }
 
   ///////
