@@ -30,27 +30,37 @@ $('#goto-box').submit(function(e) {
 function scrollToHash() {
   if (!gotoRootNode) return;
 
-  var id = window.location.hash.slice(6);
-  var path = id.split('-').slice(1);
+  var parts = window.location.hash.split('#');
 
-  $('#goto-box input').val(id);
-  $('.node .flash').removeClass('flash');
+  if (parts.length > 1) {
+    var id = parts[1].slice(5);
+    var path = id.split('-').slice(1);
 
-  try {
-    var target = gotoRootNode.walk(path, function(node) {
-        node.expand();
-    }).goto();
-    select(target);
-    target.flash();
-    target.expand();
-  } catch(e) {
-    if (e.stack) {
-      console.log(e.stack);
-      addMessage('Invalid Path', 'See console output.', 'danger', 5000)
-    } else {
-      addMessage('Invalid Path', e, 'danger', 0)
+    $('#goto-box input').val(id);
+    $('.node .flash').removeClass('flash');
+
+    try {
+      var target = gotoRootNode.walk(path, function(node) {
+          node.expand();
+      }).goto();
+      select(target);
+      target.flash();
+      target.expand();
+    } catch(e) {
+      if (e.stack) {
+        console.log(e.stack);
+        addMessage('Invalid Path', 'See console output.', 'danger', 5000)
+      } else {
+        addMessage('Invalid Path', e, 'danger', 0)
+      }
     }
   }
+
+  // TODO guard with key
+  if (parts.length > 2) {
+    document.getElementById(parts[2]).click();
+  }
+
 }
 
 window.onhashchange = scrollToHash;

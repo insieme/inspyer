@@ -2,7 +2,7 @@
 
 function constructMetaBodiesHtml(node, bodies, meta) {
 
-  function buildGroup(group) {
+  function buildGroup(group_id, group) {
     const ENTRIES_CLASS = 'analysismeta-group-body';
 
     var $group = $('<div>').addClass('analysismeta-group');
@@ -14,6 +14,7 @@ function constructMetaBodiesHtml(node, bodies, meta) {
 
     if (any_links) {
       var $label = $('<a>')
+          .attr('id', group_id)
           .click(function(e) {
             e.stopPropagation();
 
@@ -57,7 +58,7 @@ function constructMetaBodiesHtml(node, bodies, meta) {
   function buildLinkGroupEntry(l) {
     var $link = $('<a>')
       .addClass('analysismeta-linkgroup-body-entry-link')
-      .attr('href', `#node-${l.address}`)
+      .attr('href', `#node-${l.address}#${l.identifier}`)
       .text(`${l.label}@${l.address}`);
 
     if (!l.active) {
@@ -98,7 +99,7 @@ function constructMetaBodiesHtml(node, bodies, meta) {
   return $('<div>')
     .append(
       $.map(meta.groups, function(group_id) {
-        return buildGroup(meta.group_map[group_id]);
+        return buildGroup(group_id, meta.group_map[group_id]);
       })
     );
 }
