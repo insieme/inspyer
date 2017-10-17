@@ -39,8 +39,10 @@ function scrollToHash() {
   try {
     var target = gotoRootNode.walk(path, function(node) {
         node.expand();
-    }).goto().flash();
+    }).goto();
     select(target);
+    target.flash();
+    target.expand();
   } catch(e) {
     if (e.stack) {
       console.log(e.stack);

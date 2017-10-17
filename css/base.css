@@ -5,6 +5,11 @@ body {
   margin-bottom: 800px;
 }
 
+a.disabled {
+  pointer-events: none;
+  color: #333;
+}
+
 /* ------------------------------------------------------------ Navbar */
 
 .navbar {
@@ -72,7 +77,6 @@ body {
   border: solid thin lightblue;
   background-color: #fdfdfd;
   padding: 2px;
-  cursor: pointer;
   position: relative;
 }
 
@@ -84,6 +88,10 @@ body {
 .node.selected {
   border: solid 3px lightslategrey;
   padding: 0px;
+}
+
+.node-head {
+  cursor: pointer;
 }
 
 .node-hl {
@@ -187,7 +195,7 @@ body {
 }
 
 /* do not move reference label on hover */
-.node:not(.selected):hover > .node-header > .node-header-ref {
+.node:not(.selected):hover > .node-head > .node-header > .node-header-ref {
   top: 3px;
   right: -2px;
 }
@@ -200,6 +208,43 @@ body {
 
 .node-body-text:empty {
   display: none;
+}
+
+/* ------------------------------------------------------------ Analysis Metadata */
+
+.node-body-analysis {
+  background: #eeeeee;
+  padding: 5px;
+  margin: 2px 2px 2px 6px;
+  border-radius: 2px;
+}
+
+.node-body-analysis a.analysismeta-group-header-label {
+  cursor: pointer;
+}
+
+.node-body-analysis .analysismeta-group-body {
+  margin-left: 16px;
+  margin-bottom: 5px;
+  border-top: solid thin lightblue;
+}
+
+.node-body-analysis .analysismeta-linkgroup-header {
+  font-weight: bold;
+}
+
+.node-body-analysis .analysismeta-linkgroup-body {
+  margin-left: 16px;
+}
+
+.node-body-analysis .analysismeta-ellipsis {
+  display: inline-block;
+  color: #333;
+  background: #eee;
+  font-size: 10px;
+  padding: 0px 4px;
+  margin: 0px 10px -2px;
+  border-radius: 2px;
 }
 
 /* ------------------------------------------------------------ Animations */

@@ -68,7 +68,7 @@ function loadTree() {
       return;
     }
 
-    // init label / body from meta
+    // init label from meta
     root.onDisplayLabel = function(node) {
       if (meta && meta.labels && meta.labels[node.id]) {
         return meta.labels[node.id];
@@ -76,12 +76,24 @@ function loadTree() {
         return '';
       }
     }
+
+    // init body from meta
     root.onDisplayBody = function(node) {
+      var $body = $('<div>');
+
       if (meta && meta.bodies && meta.bodies[node.id]) {
-        return meta.bodies[node.id];
-      } else {
-        return '';
+        $body.append(
+          $('<div>').addClass('node-body-text').html(meta.bodies[node.id])
+        );
       }
+
+      if (meta && meta.bodies_v2 && meta.bodies_v2[node.id]) {
+        $body.append(
+          constructMetaBodiesHtml(node, meta.bodies_v2, meta.bodies_v2[node.id]).addClass('node-body-analysis')
+        );
+      }
+
+      return $body;
     }
 
     // init goto

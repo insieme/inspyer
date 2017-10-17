@@ -130,34 +130,39 @@ Node.prototype.bookmarkButton = function () {
 Node.prototype.buildElement = function() {
   var node = this;
   var e = $('<div class="node">').attr('id', this.id).addClass(this.hlClass()).append(
-    $('<div class="node-controls">').append(
-      $('<span class="node-controls-expand">').text('[+]'),
-      this.bookmarkButton()
+    $('<div class="node-head">').append(
+      $('<div class="node-controls">').append(
+        $('<span class="node-controls-expand">').text('[+]'),
+        this.bookmarkButton()
+      ),
+
+      $('<div class="node-header">').append(
+        $('<span class="node-header-path">').text('[ ' + this.id + ' ]'),
+        $('<span class="node-header-kind">').text(this.kind),
+        $('<span class="node-header-type">').html(this.displayType()),
+        $('<span class="node-header-value">').html(this.displayValue()),
+        $('<span class="node-header-variable">').html(this.displayVariable()),
+        $('<span class="node-header-meta">').html(this.onDisplayLabel(this)),
+        $('<div class="node-header-ref">').text(this.ref)
+      )
     ),
 
-    $('<div class="node-header">').append(
-      $('<span class="node-header-path">').text('[ ' + this.id + ' ]'),
-      $('<span class="node-header-kind">').text(this.kind),
-      $('<span class="node-header-type">').html(this.displayType()),
-      $('<span class="node-header-value">').html(this.displayValue()),
-      $('<span class="node-header-variable">').html(this.displayVariable()),
-      $('<span class="node-header-meta">').html(this.onDisplayLabel(this)),
-      $('<div class="node-header-ref">').text(this.ref)
-    ),
-
-    $('<div class="node-body collapse">').attr('id', this.id + '-body').append(
-      $('<div class="node-body-text">').html(this.onDisplayBody(this)),
-      $('<div class="node-body-children">')
-    ).on('show.bs.collapse', function (e) {
+    this.onDisplayBody(this)
+      .addClass('node-body collapse')
+      .attr('id', this.id + '-body')
+      .append($('<div class="node-body-children">'))
+      .on('show.bs.collapse', function (e) {
         e.stopPropagation();
         node.onExpand();
-    }).on('hide.bs.collapse', function(e) {
+      })
+      .on('hide.bs.collapse', function(e) {
         e.stopPropagation();
         node.onCollapse();
-    }).on('hidden.bs.collapse', function(e) {
+      })
+      .on('hidden.bs.collapse', function(e) {
         e.stopPropagation();
         node.onCollapsed();
-    })
+      })
   );
 
   // view option hide path
@@ -168,7 +173,7 @@ Node.prototype.buildElement = function() {
   }
 
   if (this.onClick) {
-    e.click(function(e) {
+    $(e).find('> .node-head').click(function(e) {
         e.stopPropagation();
 
         // do not trigger on selection
@@ -192,7 +197,7 @@ Node.prototype.expand = function() {
 }
 
 Node.prototype.onExpand = function() {
-  this.getElement().find('> .node-controls > .node-controls-expand').text('[-]');
+  this.getElement().find('.node-head > .node-controls > .node-controls-expand').text('[-]');
   this.getElement().find('> .node-body > .node-body-children').append(
     this.getChildren().map(function(c) { return c.getElement(); })
   );
@@ -208,7 +213,7 @@ Node.prototype.collapse = function () {
 }
 
 Node.prototype.onCollapse = function() {
-  this.getElement().find('> .node-controls > .node-controls-expand').text('[+]');
+  this.getElement().find('.node-head > .node-controls > .node-controls-expand').text('[+]');
 }
 
 Node.prototype.onCollapsed = function() {
