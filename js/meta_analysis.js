@@ -81,8 +81,7 @@ function constructMetaBodiesHtml(node, bodies, meta) {
           .addClass('analysismeta-ellipsis')
           .text('…')
           .click(function(e) {
-            e.stopPropagation();
-            $(this).parent().html(linkNodeAddresses(g.details))
+            $(this).parent().html(linkNodeAddresses(group.details));
           })
       )
     }
