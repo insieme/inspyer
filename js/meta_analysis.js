@@ -14,7 +14,7 @@ function constructMetaBodiesHtml(node, bodies, meta) {
 
     if (any_links) {
       var $label = $('<a>')
-          .attr('id', group_id)
+          .attr('id', `node-${node.id}#${group_id}`)
           .click(function(e) {
             e.stopPropagation();
 

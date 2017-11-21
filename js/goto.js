@@ -30,17 +30,18 @@ $('#goto-box').submit(function(e) {
 function scrollToHash() {
   if (!gotoRootNode) return;
 
-  var parts = window.location.hash.split('#');
+  var hash = window.location.hash.slice(1);
+  var parts = hash.split('#');
 
-  if (parts.length > 1) {
-    var id = parts[1].slice(5);
-    var path = id.split('-').slice(1);
+  if (parts.length > 0) {
+    var node_addr = parts[0].slice(5);
+    var node_path = node_addr.split('-').slice(1);
 
-    $('#goto-box input').val(id);
+    $('#goto-box input').val(node_addr);
     $('.node .flash').removeClass('flash');
 
     try {
-      var target = gotoRootNode.walk(path, function(node) {
+      var target = gotoRootNode.walk(node_path, function(node) {
           node.expand();
       }).goto();
       select(target);
@@ -57,8 +58,8 @@ function scrollToHash() {
   }
 
   // TODO guard with key
-  if (parts.length > 2) {
-    document.getElementById(parts[2]).click();
+  if (parts.length > 1) {
+    document.getElementById(hash).click();
   }
 
 }
