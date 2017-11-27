@@ -227,6 +227,9 @@ Node.prototype.onCollapsed = function() {
 }
 
 Node.prototype.goto = function() {
+  // unset focus
+  $(':focus').blur();
+
   // scroll to target
   $('html, body').stop().animate({
       scrollTop: this.getElement().offset().top - 200
