@@ -145,25 +145,31 @@ Node.prototype.buildElement = function() {
         $('<span class="node-header-meta">').html(this.onDisplayLabel(this)),
         $('<div class="node-header-ref">').text(this.ref)
       )
-    ),
+    ));
 
-    this.onDisplayBody(this)
+  var node_body = this.onDisplayBody(this)
       .addClass('node-body collapse')
       .attr('id', this.id + '-body')
       .append($('<div class="node-body-children">'))
       .on('show.bs.collapse', function (e) {
         e.stopPropagation();
-        node.onExpand();
+        if(e.target == node_body[0]) {
+          node.onExpand();
+        }
       })
       .on('hide.bs.collapse', function(e) {
         e.stopPropagation();
-        node.onCollapse();
+        if(e.target == node_body[0]) {
+          node.onCollapse();
+        }
       })
       .on('hidden.bs.collapse', function(e) {
         e.stopPropagation();
-        node.onCollapsed();
-      })
-  );
+        if(e.target == node_body[0]) {
+          node.onCollapsed();
+        }
+      });
+  e.append(node_body);
 
   // view option hide path
   if (showPath) {

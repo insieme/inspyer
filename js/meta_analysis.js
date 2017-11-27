@@ -12,24 +12,19 @@ function constructMetaBodiesHtml(node, bodies, meta) {
       any_links |= group.link_groups[i].links.length > 0;
     }
 
+    var $group_body = $('<div>')
+        .attr('id', `node-${node.id}#${group_id}`)
+        .addClass('analysismeta-group-body')
+        .addClass('collapse')
+        .append(
+          $.map(group.link_groups, buildLinkGroup)
+        )
+
     if (any_links) {
       var $label = $('<a>')
-          .attr('id', `node-${node.id}#${group_id}`)
           .click(function(e) {
-            e.stopPropagation();
-
-            var $entries = $group.find(`> .${ENTRIES_CLASS}`);
-            if ($entries.length > 0) {
-              $entries.remove();
-            } else {
-              $group.append(
-                $('<div>')
-                  .addClass(ENTRIES_CLASS)
-                  .append(
-                    $.map(group.link_groups, buildLinkGroup)
-                  )
-              );
-            }
+              e.stopPropagation();
+              $group_body.collapse('toggle');
           });
     } else {
       var $label = $('<span>').text(group.label);
@@ -42,7 +37,8 @@ function constructMetaBodiesHtml(node, bodies, meta) {
           $label.addClass('analysismeta-group-header-label').text(group.label),
           ' = ',
           display(group)
-        )
+        ),
+      $group_body
     );
   }
 

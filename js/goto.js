@@ -33,6 +33,8 @@ function scrollToHash() {
   var hash = window.location.hash.slice(1);
   var parts = hash.split('#');
 
+  console.log("scrollToHash", hash);
+
   if (parts.length > 0) {
     var node_addr = parts[0].slice(5);
     var node_path = node_addr.split('-').slice(1);
@@ -59,7 +61,7 @@ function scrollToHash() {
 
   // TODO guard with key
   if (parts.length > 1) {
-    document.getElementById(hash).click();
+    $(document.getElementById(hash)).collapse('show');
   }
 
 }
