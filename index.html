@@ -11,7 +11,7 @@
 
     <nav class="navbar navbar-default navbar-fixed-top">
 
-      <span class="navbar-brand">INSPYER</span>
+      <span class="navbar-brand"><a href="#">INSPYER</a></span>
 
       <form id="load-box" class="navbar-form">
         <div class="input-group">
@@ -163,10 +163,18 @@
 
     <script src="js/page_logic.js"></script>
 
-    <!-- initialize tooltips -->
+    <!-- initialize -->
     <script>
       $(function() {
+          // tooltips
           $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+
+          // INSPYER label
+          $('.navbar-brand').click(function(e) {
+            if (confirm('Do you really want to reload?')) {
+              location.reload();
+            }
+          });
       });
     </script>
 
