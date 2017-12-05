@@ -96,7 +96,7 @@ Node.prototype.refreshElement = function() {
 
   // meta information
   this.element.find('> .node-header > .node-header-meta').html(this.onDisplayLabel(this));
-  this.element.find('> .node-body > .node-body-text').html(this.onDisplayBody(this));
+  this.element.find('> .node-body > .node-body-data').html(this.onDisplayBody(this).html());
 
   // propagate
   for (var i in this.children) {
@@ -147,10 +147,13 @@ Node.prototype.buildElement = function() {
       )
     ));
 
-  var node_body = this.onDisplayBody(this)
+  var node_body = $('<div>')
       .addClass('node-body collapse')
       .attr('id', this.id + '-body')
-      .append($('<div class="node-body-children">'))
+      .append(
+        this.onDisplayBody(this).addClass('node-body-data'),
+        $('<div class="node-body-children">')
+      )
       .on('show.bs.collapse', function (e) {
         e.stopPropagation();
         if(e.target == node_body[0]) {
