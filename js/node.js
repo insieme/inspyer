@@ -96,7 +96,7 @@ Node.prototype.refreshElement = function() {
 
   // meta information
   this.element.find('> .node-header > .node-header-meta').html(this.onDisplayLabel(this));
-  this.element.find('> .node-body > .node-body-data').html(this.onDisplayBody(this).html());
+  this.element.find('> .node-body > .node-body-data').empty().append(this.onDisplayBody(this));
 
   // propagate
   for (var i in this.children) {
