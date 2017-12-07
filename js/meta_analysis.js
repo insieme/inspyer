@@ -55,7 +55,15 @@ function constructMetaBodiesHtml(node, bodies, meta) {
     var $link = $('<a>')
       .addClass('analysismeta-linkgroup-body-entry-link')
       .attr('href', `#node-${l.address}#${l.identifier}`)
-      .text(`${l.label}@${l.address}`);
+      .text(`${l.label}@${l.address}`)
+      .click(function(e){ 
+          e.preventDefault();
+          var new_hash = `node-${l.address}#${l.identifier}`;
+          if(new_hash != window.location.hash)
+              if(window.onhashchange)
+                  window.onhashchange();
+          window.location.hash = new_hash
+      });
 
     if (!l.active) {
       $link.addClass('disabled');
