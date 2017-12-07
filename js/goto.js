@@ -61,7 +61,10 @@ function scrollToHash() {
 
   // TODO guard with key
   if (parts.length > 1) {
-    $(document.getElementById(hash)).collapse('show');
+      var el = $(document.getElementById(hash));
+      el.collapse('show');
+      el.addClass('flash');
+      setTimeout(function() { el.removeClass('flash'); }, 2000);
   }
 
 }
