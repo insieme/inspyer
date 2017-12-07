@@ -61,10 +61,18 @@ function constructMetaBodiesHtml(node, bodies, meta) {
       $link.addClass('disabled');
     }
 
+    var value;
+    try {
+      value = display(bodies[l.address].group_map[l.identifier])
+    } catch(e) {
+      console.warn(e)
+      value = $('<code>').text('Exception: ' + e.toString());
+    }
+
     return $('<div>').addClass('analysismeta-linkgroup-body-entry').append(
       $link,
       ' = ',
-      display(bodies[l.address].group_map[l.identifier])
+      value
     );
   }
 
