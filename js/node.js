@@ -12,8 +12,8 @@ function Node(ref, tree, id='0', parent=undefined) {
 
   this.children = [];
 
-  this.onDisplayLabel = function() { return ''; };
-  this.onDisplayBody = function() { return ''; };
+  this.onDisplayLabel = function() { return $('<div>'); };
+  this.onDisplayBody = function() { return $('<div>'); };
 }
 
 Node.prototype.getPath = function() {
@@ -21,13 +21,19 @@ Node.prototype.getPath = function() {
 }
 
 Node.prototype.walk = function(path, fun, onLast=false) {
+  var nodes = [];
   var node = this;
+
   for (var i in path) {
-    if (fun) fun(node);
+    nodes.push(node);
     node = node.getChild(path[i]);
   }
-  if (fun && onLast) fun(node);
-  return node;
+  nodes.push(node);
+
+ if(!onLast)
+   nodes.pop();
+
+  return all($.map(nodes, fun));
 }
 
 Node.prototype.loadChild = function(index) {
@@ -96,7 +102,7 @@ Node.prototype.refreshElement = function() {
 
   // meta information
   this.element.find('> .node-header > .node-header-meta').html(this.onDisplayLabel(this));
-  this.element.find('> .node-body > .node-body-data').empty().append(this.onDisplayBody(this));
+  this.element.find('> .node-body > .node-body-data').replaceWith($(this.onDisplayBody(this)).addClass('node-body-data'));
 
   // propagate
   for (var i in this.children) {
@@ -151,7 +157,7 @@ Node.prototype.buildElement = function() {
       .addClass('node-body collapse')
       .attr('id', this.id + '-body')
       .append(
-        this.onDisplayBody(this).addClass('node-body-data'),
+        $('<div class="node-body-data">'),
         $('<div class="node-body-children">')
       )
       .on('show.bs.collapse', function (e) {
@@ -211,6 +217,10 @@ Node.prototype.onExpand = function() {
     this.getChildren().map(function(c) { return c.getElement(); })
   );
 
+  var body = this.getElement().find('> .node-body > .node-body-data');
+  if(body.is(':empty'))
+        body.replaceWith($(this.onDisplayBody(this)).addClass('node-body-data'));
+
   // propagate expand
   if (this.getChildren().length == 1) {
     this.getChild(0).expand();
@@ -233,11 +243,15 @@ Node.prototype.goto = function() {
   // unset focus
   $(':focus').blur();
 
+  var el = this.getElement();
+
   // scroll to target
-  $('html, body').stop().animate({
-      scrollTop: this.getElement().offset().top - 200
-  }, 400);
-  return this;
+  keepInView(el[0], 200);
+  return $('html, body').stop().animate({
+      scrollTop: el.offset().top - 200
+  }, 400, function done() {
+    //keepInView(el[0]);
+  });
 }
 
 Node.prototype.flash = function() {
@@ -369,3 +383,14 @@ Node.prototype.displayVariable = function() {
 
   return '';
 }
+
+// The CSS hover selector selects all elements who's bounding box intersects
+// with the mouse position, we only want the topmost one.
+$(document).mouseover(function(ev){
+  ev.preventDefault();
+  const el = $(ev.target || ev.srcElement);
+  if(el.is('.node')) {
+    $('.node-hover').removeClass('node-hover');
+    el.addClass('node-hover');
+  }
+});

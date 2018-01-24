@@ -67,6 +67,15 @@ $(document).bind('keydown', 'space', function(e) {
     }
 });
 
+$(document).bind('keydown', 'g', function(e) {
+    e.preventDefault();
+
+    if (!selectedNode)
+      return;
+
+    selectedNode.goto();
+});
+
 function selectClick(node) {
   node.toggleExpand();
   select(node);

@@ -108,6 +108,11 @@
             <h4 class="modal-title">More...</h4>
           </div>
           <div class="modal-body">
+            <h4>Settings</h4>
+            <label>
+              <input type="checkbox" id="settings-jqaas-enabled"> Use JSON web service
+            </label>
+
             <h4>Hotkeys</h4>
             <table class="table table-condensed">
               <tr>
@@ -130,6 +135,10 @@
                 <td><kbd>Space</kbd></td>
                 <td>Open / close selected node</td>
               </tr>
+              <tr>
+                <td><kbd>g</kbd></td>
+                <td>Scroll view to selected node</td>
+              </tr>
             </table>
             <hr />
             <span class="node-header-type">Type</span>
@@ -139,7 +148,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">
-              <span class="glyphicon glyphicon-ok"></span>
+              <span class="glyphicon glyphicon-piggy-bank"></span>
             </button>
           </div>
         </div>
@@ -151,6 +160,8 @@
     <script src="js/jquery.js"></script>
     <script src="js/jquery.hotkeys.js"></script>
     <script src="js/bootstrap.js"></script>
+    <script src="js/functional_utils.js"></script>
+    <script src="js/ajax.js"></script>
     <script src="js/view_options.js"></script>
     <script src="js/node.js"></script>
     <script src="js/meta_analysis.js"></script>
@@ -162,6 +173,9 @@
     <script src="js/dragndrop.js"></script>
 
     <script src="js/page_logic.js"></script>
+
+    <!-- <script src="js/preloaded_data.js"></script> -->
+    <!-- <script src="js/preload.js"></script> -->
 
     <!-- initialize -->
     <script>
