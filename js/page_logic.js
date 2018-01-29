@@ -174,7 +174,7 @@ function loadTree() {
 function loadMeta(noScroll) {
   var promise = $.Deferred().resolve();
   if(loadMeta.isJQaaSAvailable === undefined) {
-    promise = $.get('api/')
+    promise = $.get('api')
         .then(function ok() {
           loadMeta.isJQaaSAvailable = true;
         }, function fail() {
