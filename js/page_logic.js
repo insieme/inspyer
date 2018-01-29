@@ -184,12 +184,12 @@ function loadMeta(noScroll) {
           console.log('loadMeta.isJQaaSAvailable', true);
           const MB = 1024 * 1024;
           const useJQaaS =
-              metaFile.size > 100 * MB
+              metaFile.size > 50 * MB
               && loadMeta.isJQaaSAvailable;
 
           $('#settings-jqaas-enabled').prop('checked', useJQaaS);
 
-          addMessage('Using JSON web service', 'Metadata file is >100MB');
+          addMessage('Using JSON web service', 'Metadata file is >50MB');
         })
   }
 
