@@ -154,7 +154,6 @@ a.disabled {
   margin: 0px 10px -2px;
   border-radius: 2px;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
