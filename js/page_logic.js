@@ -14,6 +14,9 @@ var treeFile;
 var meta;
 var metaFile;
 
+const jqaas_refresh_interval = 10 * 1000; // [ms]
+const jqaas_retry_interval = 5000;
+
 $('#input-tree').on('change', function(e) {
     treeFile = e.target.files[0];
     loadTree();
@@ -81,15 +84,32 @@ function loadTree() {
     root.onDisplayBody = function(node) {
       var $body = $('<div>');
 
-      if (meta && meta.bodies && meta.bodies[node.id]) {
-        $body.append(
-          $('<div>').addClass('node-body-text').html(meta.bodies[node.id])
-        );
-      }
+      if (meta &&
+          ( (meta.bodies_v2 && meta.bodies_v2[node.id]) ||
+            meta.jqaas
+          ))
+      {
+        // meta.bodies_v2, meta.bodies_v2[node.id]
+        keepInView.maintain(function(){
+          $body.append($('<span>Loading...</span>'))
+        })();
 
-      if (meta && meta.bodies_v2 && meta.bodies_v2[node.id]) {
-        $body.append(
-          constructMetaBodiesHtml(node, meta.bodies_v2, meta.bodies_v2[node.id]).addClass('node-body-analysis')
+        constructAnalysisMeta(node.id, meta)
+            .then(keepInView.maintain(function(el){
+              $body.empty().append(el.addClass('node-body-analysis'));
+            }))
+            .fail(function (err) {
+              console.error('constructAnalysisMeta fail', err);
+              var retry = $('<a class="retry-btn">(retry)</a>')
+                  .on('click', function() {
+                    $body.replaceWith(node.onDisplayBody(node));
+                  });
+
+              $body.empty().append($('<span>Failed</span>'), retry);
+            });
+      } else if (meta && meta.bodies && meta.bodies[node.id]) {
+        $body.empty().append(
+          $('<div>').addClass('node-body-text').html(meta.bodies[node.id])
         );
       }
 
@@ -152,41 +172,150 @@ function loadTree() {
 }
 
 function loadMeta(noScroll) {
-  var reader = new FileReader();
-  reader.onload = function() {
-    meta = JSON.parse(this.result);
+  var promise = $.Deferred().resolve();
+  if(loadMeta.isJQaaSAvailable === undefined) {
+    promise = $.get('api')
+        .then(function ok() {
+          loadMeta.isJQaaSAvailable = true;
+        }, function fail() {
+          loadMeta.isJQaaSAvailable = false;
+        })
+        .always(function() {
+          console.log('loadMeta.isJQaaSAvailable', true);
+          const MB = 1024 * 1024;
+          const useJQaaS =
+              metaFile.size > 50 * MB
+              && loadMeta.isJQaaSAvailable;
 
-    // add bookmarks
-    if (meta.bookmarks) {
-      bookmarks = bookmarks.concat(meta.bookmarks);
-      bookmarks = Array.from(new Set(bookmarks));
-      bookmarks.sort();
-    }
+          $('#settings-jqaas-enabled').prop('checked', useJQaaS);
 
-    // jump to first bookmark
-    if (bookmarks.length > 0 && !noScroll) {
-      gotoNodeById(bookmarks[0]);
-    }
-
-    // expands
-    for (var i in meta.expands) {
-      var path = meta.expands[i].split('-').slice(1);
-      root.walk(path, function(node) { node.expand(); }, true);
-    }
-
-    // highlights
-    for (var i in meta.highlights) {
-      var path = meta.highlights[i].split('-').slice(1);
-      root.walk(path).addHl();
-    }
-
-    // refresh
-    root.refreshElement();
-
-    addMessage('Loaded Meta', '<span class="glyphicon glyphicon-file"></span> ' + metaFile.name);
+          addMessage('Using JSON web service', 'Metadata file is >50MB');
+        })
   }
-  console.info('Loading Meta: ' + metaFile.name);
-  reader.readAsText(metaFile);
+
+  promise
+      .then(function() {
+        loadMetaGeneric(metaFile)
+            .then(function(meta) {
+              window.meta = meta;
+              handleMetaLoaded(meta, noScroll);
+            }, function(err) {
+              addMessage('Loading Meta failed', '' + err + '. Check your network connection.', 'danger', 5000);
+            });
+      });
+}
+
+function loadMetaGeneric(file) {
+  return $('#settings-jqaas-enabled').is(':checked')
+          ? loadMetaJqaas(file)
+          : loadMetaJson(file)
+}
+
+function handleMetaLoaded(meta, noScroll)
+{
+  // add bookmarks
+  if (meta.bookmarks) {
+    bookmarks = bookmarks.concat(meta.bookmarks);
+    bookmarks = Array.from(new Set(bookmarks));
+    bookmarks.sort();
+  }
+
+  // jump to first bookmark
+  if (bookmarks.length > 0 && !noScroll) {
+    gotoNodeById(bookmarks[0]);
+  }
+
+  // expands
+  for (var i in meta.expands) {
+    var path = meta.expands[i].split('-').slice(1);
+    root.walk(path, function(node) { node.expand(); }, true);
+  }
+
+  // highlights
+  for (var i in meta.highlights) {
+    var path = meta.highlights[i].split('-').slice(1);
+    root.walk(path).then(function(nodes) {
+      nodes[nodes.length - 1].addHl();
+    });
+  }
+
+  // refresh
+  root.refreshElement();
+
+  addMessage('Loaded Meta', '<span class="glyphicon glyphicon-file"></span> ' + metaFile.name);
+}
+
+function loadMetaJson(file) {
+  console.info('Loading Meta: ' + file.name);
+
+  var reader = new FileReader();
+  var promise = $.Deferred();
+  reader.onerror = function(err) { promise.reject(err); };
+  reader.onload  = function() { promise.resolve(JSON.parse(this.result)); };
+  reader.readAsText(file);
+  return promise;
+}
+
+function loadMetaJqaas(file, opts) {
+  console.info('Loading JQaaS Meta: ' + file.name);
+
+  const apiEndpointUrl = new URL("api/", window.location.href);
+  var promise = opts && opts.promise ? opts.promise : $.Deferred();
+
+  if(loadMetaJqaas.refreshIntervalId)
+    clearInterval(loadMetaJqaas.refreshIntervalId);
+
+  if(loadMetaJqaas.retryTimeoutId)
+    cancelTimeout(loadMetaJqaas.retryTimeoutId);
+
+  putJSON(apiEndpointUrl, file)
+      .then(function(resp){
+        if(!resp.ok) {
+          promise.reject('HTTP Error: ' + resp.status + ' ' + resp.statusText);
+          return;
+        }
+
+        const new_resource_url =
+            new URL(resp.headers.get("Location"), apiEndpointUrl);
+        console.log("JQaaS post done", new_resource_url, resp);
+
+        promise.resolve({ jqaas: new_resource_url });
+
+        loadMetaJqaas.refreshIntervalId =
+            setInterval(metaKeepAlive, jqaas_refresh_interval, new_resource_url);
+
+      }, function(err){
+        console.log("JQaaS put error:", err);
+
+        if(opts && opts.retry) {
+          opts.promise = promise;
+          loadMetaJqaas.retryTimeoutId =
+              setTimeout(loadMetaJqaas, jqaas_retry_interval, file, opts);
+        } else {
+          promise.reject(err);
+        }
+      });
+
+  return promise;
+}
+
+function metaKeepAlive(new_resource_url) {
+  if(metaKeepAlive.busy)
+    return;
+  metaKeepAlive.busy = true;
+
+  getJSON(mkJQaaSURL(new_resource_url, 'null'))
+      .always(function () {
+        metaKeepAlive.busy = false;
+      })
+      .then(function ok() {
+        $('.retry-btn').click();
+      }, function fail() {
+        loadMetaJqaas(file, { retry: true })
+            .then(function() {
+              $('.retry-btn').click();
+            });
+      });
 }
 
 function setTitle(title) {

@@ -43,12 +43,26 @@ function scrollToHash() {
     $('.node .flash').removeClass('flash');
 
     try {
-      var target = gotoRootNode.walk(node_path, function(node) {
-          node.expand();
-      }).goto();
-      select(target);
-      target.flash();
-      target.expand();
+      gotoRootNode.walk(node_path, function(node) {
+        node.expand();
+        return node;
+      }, true)
+          .then(function(nodes) {
+            const target = nodes[nodes.length-1];
+            select(target);
+            target.flash();
+            return target.goto();
+          })
+          .then(function() {
+            // TODO guard with key
+            if (parts.length > 1) {
+              var el = $(document.getElementById(hash));
+              el.collapse('show');
+              el.addClass('flash');
+              setTimeout(function() { el.removeClass('flash'); }, 2000);
+            }
+          });
+
     } catch(e) {
       if (e.stack) {
         console.log(e.stack);
@@ -58,12 +72,43 @@ function scrollToHash() {
       }
     }
   }
-
-  // TODO guard with key
-  if (parts.length > 1) {
-    $(document.getElementById(hash)).collapse('show');
-  }
-
 }
 
 window.onhashchange = scrollToHash;
+
+function elementOffsetFromTopOfView(el) {
+  return $(el).offset().top - $(window).scrollTop();
+}
+
+function keepInView(el, wantedOffsetFromTop) {
+  keepInView.didUserScroll = false;
+  keepInView.element = el;
+  keepInView.wantedOffsetFromTop =
+      wantedOffsetFromTop
+      ? wantedOffsetFromTop
+      : elementOffsetFromTopOfView(el);
+  console.log('keepInView.wantedOffsetFromTop ', keepInView.wantedOffsetFromTop);
+}
+
+window.addEventListener('wheel', function fn(e) {
+  keepInView.didUserScroll = true;
+});
+
+keepInView.maintain = function (fn) {
+  return function(){
+    var rv = fn.apply(this, arguments);
+
+    if(!keepInView.element
+       || keepInView.didUserScroll
+       || !$.contains(document.body, keepInView.element)
+      )
+      return rv;
+
+    const delta =
+        elementOffsetFromTopOfView(keepInView.element)
+        - keepInView.wantedOffsetFromTop;
+
+    $(window).scrollTop($(window).scrollTop() + delta);
+    return rv;
+  }
+}
