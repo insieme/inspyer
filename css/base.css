@@ -145,6 +145,10 @@ a.disabled {
   margin-right: 12px;
 }
 
+.node-header-sloc .tooltip-inner {
+  max-width: initial;
+}
+
 .node-header-type,
 .node-header-value,
 .node-header-variable,

@@ -8,6 +8,7 @@ function Node(ref, tree, id='0', parent=undefined) {
 
   this.kind = tree[ref]['Kind'];
   this.value = tree[ref]['Value'];
+  this.sloc = tree[ref]['sloc'];
   this.inputNodeChildren = tree[ref]['Children'] || [];
 
   this.children = [];
@@ -148,6 +149,7 @@ Node.prototype.buildElement = function() {
       $('<div class="node-header">').append(
         $('<span class="node-header-path">').text('[ ' + this.id + ' ]'),
         $('<span class="node-header-kind">').text(this.kind),
+        $('<span class="node-header-sloc">').html(this.displaySloc()),
         $('<span class="node-header-type">').html(this.displayType()),
         $('<span class="node-header-value">').html(this.displayValue()),
         $('<span class="node-header-variable">').html(this.displayVariable()),
@@ -295,6 +297,19 @@ Node.prototype.hlClass = function() {
 
 Node.prototype.select = function() {
   this.getElement().addClass('selected');
+}
+
+Node.prototype.displaySloc = function() {
+  if (!this.sloc) {
+    return '';
+  }
+
+  return $('<span>')
+    .addClass('glyphicon glyphicon-file')
+    .attr('data-toggle', 'tooltip')
+    .attr('data-placement', 'right')
+    .attr('title', this.sloc)
+    .tooltip();
 }
 
 Node.prototype.displayType = function() {
